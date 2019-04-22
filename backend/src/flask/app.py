@@ -10,6 +10,7 @@ book = api.model('Book', {
 })
 
 
+# teste
 @ns.route('/')
 class BooksCollection(Resource):
     @ns.marshal_list_with(book, code=201)
