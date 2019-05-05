@@ -1,4 +1,5 @@
-from backend.src.entities.entity import Book, db
+from backend.src.db import db
+from backend.src.entities.books import Book
 
 # generate database schema
 db.drop_all()

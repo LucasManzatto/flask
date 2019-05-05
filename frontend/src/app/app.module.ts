@@ -1,24 +1,23 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { BookListComponent } from './books/book-list/book-list.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MaterialModule } from './material/material.module';
+import {AppRoutingModule} from './app-routing.module';
+import {AppComponent} from './app.component';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {FlexLayoutModule} from '@angular/flex-layout';
+import {SharedModule} from './shared/shared.module';
+import {BookListComponent} from './containers/books/book-list/book-list.component';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    BookListComponent,
+    AppComponent, BookListComponent
   ],
   imports: [
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    BrowserModule,
-    MaterialModule
+    AppRoutingModule, BrowserAnimationsModule, BrowserModule, SharedModule, FlexLayoutModule
   ],
+  exports: [FlexLayoutModule],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

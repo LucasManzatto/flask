@@ -1,9 +1,23 @@
 <!--The content below is only a placeholder and can be replaced.-->
 
-<mat-toolbar>
-  <span>App</span>
+<mat-toolbar [color]="'primary'">
+  <span fxFlex='30'>App</span>
+  <div fxFlex='50'>
+    <mat-form-field [floatLabel]="'never'">
+      <input matInput placeholder="Search">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  </div>
 </mat-toolbar>
+<mat-tab-group [backgroundColor]="'primary'" mat-align-tabs="center">
+  <mat-tab label="First">
+    <app-book-list></app-book-list>
+  </mat-tab>
+  <mat-tab label="Second">
 
-<app-book-list></app-book-list>
+  </mat-tab>
+  <mat-tab label="Third"> Content 3</mat-tab>
+</mat-tab-group>
+
 
 <router-outlet></router-outlet>

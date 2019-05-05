@@ -1,6 +1,8 @@
-from flask import jsonify, request
-from backend.src.entities.entity import Book, BookSchema, app, api, db
+from flask import request
 from flask_restplus import Resource, fields
+
+from backend.src.db import api, db, app
+from backend.src.entities.books import Book, BookSchema
 
 ns = api.namespace('books', description='Operations related to books')
 
@@ -47,8 +49,7 @@ class BookItem(Resource):
 
     @ns.response(201, 'Book successfully deleted.')
     def delete(self, id):
-        """Deletes a
-         book."""
+        """Deletes a book."""
         Book.query.filter_by(id=id).delete()
         db.session.commit()
         return None, 201
