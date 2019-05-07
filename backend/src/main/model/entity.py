@@ -1,4 +1,4 @@
-from backend.src.db import db
+from backend.src.main import db
 
 
 class Entity(db.Model):

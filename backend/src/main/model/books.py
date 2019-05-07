@@ -1,10 +1,7 @@
 import datetime
 
-from marshmallow import post_load
-from marshmallow_sqlalchemy import TableSchema
-
-from backend.src.db import db
-from backend.src.entities.entity import Entity
+from backend.src.main import db
+from backend.src.main.model.entity import Entity
 
 
 class Book(Entity, db.Model):

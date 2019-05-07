@@ -1,6 +1,5 @@
-from backend.src.db import db
-
-from backend.src.entities.entity import Entity
+from backend.src.main import db
+from backend.src.main.model.entity import Entity
 
 
 class Author(Entity, db.Model):
