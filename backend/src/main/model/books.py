@@ -1,29 +1,36 @@
-import datetime
-
 from backend.src.main import db
-from backend.src.main.model.entity import Entity
+from main.model.author import AuthorSchema
+from marshmallow import post_load, Schema, fields
 
 
-class Book(Entity, db.Model):
+class Book(db.Model):
+    __tablename__ = 'book'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(30))
     description = db.Column(db.String(30))
+    author_id = db.Column(db.Integer, db.ForeignKey('author.id'), nullable=True)
+    author = db.relationship("Author", back_populates='books')
 
-    def __init__(self, title, description, updated_at, last_updated_by='Script', created_at=datetime.datetime.now()):
+    def __init__(self, title, description, author_id=0):
         self.title = title
         self.description = description
-        self.last_updated_by = last_updated_by
-        self.created_at = created_at
-        self.updated_at = updated_at
+        self.author_id = author_id
 
     def __repr__(self):
-        return f"Book:{self.title}"
+        return f"Book:{self.title} , Author ID:{self.author_id}"
 
 
-class BookSchema(TableSchema):
-    class Meta:
-        table: Book
+class BookSchema(Schema):
+    description = fields.String()
+    title = fields.String()
+    author_id = fields.Number()
 
     @post_load
     def make_book(self, data):
         return Book(**data)
+
+# class BookSchema(ModelSchema):
+#     class Meta:
+#         model: Book
+#         sqla_session = db.session
+#         transient = True

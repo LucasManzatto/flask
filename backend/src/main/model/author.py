@@ -1,16 +1,26 @@
 from backend.src.main import db
-from backend.src.main.model.entity import Entity
+from marshmallow import Schema, fields, post_load
 
 
-class Author(Entity, db.Model):
+class Author(db.Model):
+    __tablename__ = 'author'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30))
-    description = db.Column(db.String(30))
+    books = db.relationship("Book", back_populates='author')
 
-    def __init__(self, title, description, last_updated_by):
-        self.title = title
-        self.description = description
-        self.last_updated_by = last_updated_by
+    def __init__(self, name=None, books=[], id=0):
+        self.id = id
+        self.name = name
+        self.books = books
 
     def __repr__(self):
-        return f"Book:{self.title}"
+        return f"Author-ID:{self.id},Name:{self.name}"
+
+
+class AuthorSchema(Schema):
+    id = fields.Number()
+    name = fields.String()
+
+    @post_load
+    def make_author(self, data):
+        return Author(**data)
