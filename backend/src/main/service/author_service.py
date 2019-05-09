@@ -6,7 +6,6 @@ def create_author(data):
     author = Author.query.filter_by(name=data['name']).first()
     if not author:
         new_author = AuthorSchema().load(data).data
-        print(new_author)
         save_changes(new_author)
         response_object = {
             'status': 'success',

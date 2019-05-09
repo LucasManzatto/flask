@@ -2,7 +2,7 @@ from flask import request
 from flask_restplus import Resource
 from main.service.author_service import get_all_authors, create_author, update_author, get_an_author, delete_author
 
-from ..util.dto import BookDTO, AuthorDTO
+from ..util.dto import AuthorDTO
 
 api = AuthorDTO.api
 author_list = AuthorDTO.author_list

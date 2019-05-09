@@ -1,5 +1,4 @@
 from backend.src.main import db
-from main.model.author import AuthorSchema
 from marshmallow import post_load, Schema, fields
 
 
@@ -8,8 +7,11 @@ class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(30))
     description = db.Column(db.String(30))
-    author_id = db.Column(db.Integer, db.ForeignKey('author.id'), nullable=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('author.id', name='fk_book_author'), nullable=True)
     author = db.relationship("Author", back_populates='books')
+    series_id = db.Column(db.Integer, db.ForeignKey('series.id', name='fk_book_series'),
+                          nullable=True)
+    series = db.relationship("Series", back_populates='books')
 
     def __init__(self, title, description, author_id=0):
         self.title = title
