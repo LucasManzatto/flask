@@ -28,11 +28,10 @@ def create_author(data):
 
 def update_author(author):
     series_ids = author.pop('series_ids', [])
-    author_object = Author.query.filter(Author.id == author['id']).first()
-
+    author_object = Author.query.get(author['id'])
     series = Series.query.filter(Series.id.in_(series_ids)).all()
-    author_object.series.extend(series)
-    Author.query.filter_by(id=author['id']).update(author)
+    author_object.series = series
+    Author.query.filter(Author.id == author['id']).update(author)
     db.session.commit()
     return None, 201
 

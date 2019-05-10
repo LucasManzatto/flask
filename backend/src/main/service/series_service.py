@@ -1,6 +1,6 @@
 from backend.src.main import db
 from flask_restplus import abort
-from main.model.books import Book
+from main.model.books import Book, BookSchema
 from main.model.series import Series, SeriesSchema
 
 
@@ -9,20 +9,15 @@ def create_series(data):
     if not series:
         books_ids = data.pop('books_ids', [])
         new_series = SeriesSchema().load(data).data
-        if new_series:
-            db.session.add(new_series)
-            db.session.flush()
-            if books_ids:
-                Book.query.filter(Book.id.in_(books_ids)).update({Book.series_id: new_series.id},
-                                                                 synchronize_session='fetch')
-            response_object = {
-                'status': 'success',
-                'message': 'Series successfully registered.'
-            }
-            db.session.commit()
-            return response_object, 201
-        else:
-            abort(400, "No author with such ID.")
+        books = Book.query.filter(Book.id.in_(books_ids)).all()
+        new_series.books = books
+        db.session.add(new_series)
+        response_object = {
+            'status': 'success',
+            'message': 'Series successfully registered.'
+        }
+        db.session.commit()
+        return response_object, 201
     else:
         response_object = {
             'status': 'fail',
@@ -33,12 +28,9 @@ def create_series(data):
 
 def update_series(series):
     books_ids = series.pop('books_ids', [])
-    series_id = series['id']
-    if books_ids:
-        Book.query.filter(Book.series_id == series_id).update({Book.series_id: None},
-                                                              synchronize_session='fetch')
-        Book.query.filter(Book.id.in_(books_ids)).update({Book.series_id: series_id},
-                                                         synchronize_session='fetch')
+    books = Book.query.filter(Book.id.in_(books_ids)).all()
+    db_series = Series.query.get(series['id'])
+    db_series.books = books
     Series.query.filter_by(id=series['id']).update(series)
     db.session.commit()
     return None, 201
