@@ -1,12 +1,18 @@
 from backend.src.main import db
 from main.model.author import Author, AuthorSchema
+from main.model.series import Series
 
 
 def create_author(data):
     author = Author.query.filter_by(name=data['name']).first()
     if not author:
+        series_ids = data.pop('series_ids', [])
         new_author = AuthorSchema().load(data).data
-        save_changes(new_author)
+
+        series = Series.query.filter(Series.id.in_(series_ids)).all()
+        new_author.series.extend(series)
+
+        db.session.commit()
         response_object = {
             'status': 'success',
             'message': 'Author successfully registered.'
@@ -21,6 +27,11 @@ def create_author(data):
 
 
 def update_author(author):
+    series_ids = author.pop('series_ids', [])
+    author_object = Author.query.filter(Author.id == author['id']).first()
+
+    series = Series.query.filter(Series.id.in_(series_ids)).all()
+    author_object.series.extend(series)
     Author.query.filter_by(id=author['id']).update(author)
     db.session.commit()
     return None, 201

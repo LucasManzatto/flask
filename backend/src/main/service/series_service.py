@@ -32,6 +32,13 @@ def create_series(data):
 
 
 def update_series(series):
+    books_ids = series.pop('books_ids', [])
+    series_id = series['id']
+    if books_ids:
+        Book.query.filter(Book.series_id == series_id).update({Book.series_id: None},
+                                                              synchronize_session='fetch')
+        Book.query.filter(Book.id.in_(books_ids)).update({Book.series_id: series_id},
+                                                         synchronize_session='fetch')
     Series.query.filter_by(id=series['id']).update(series)
     db.session.commit()
     return None, 201

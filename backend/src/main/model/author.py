@@ -1,14 +1,20 @@
 from backend.src.main import db
 from marshmallow import Schema, fields, post_load
 
+author_series = db.Table('author_series', db.Model.metadata,
+                         db.Column('author_id', db.Integer, db.ForeignKey('author.id')),
+                         db.Column('series_id', db.Integer, db.ForeignKey('series.id'))
+                         )
+
 
 class Author(db.Model):
     __tablename__ = 'author'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30))
     books = db.relationship("Book", back_populates='author')
+    series = db.relationship("Series", back_populates='authors', secondary=author_series)
 
-    def __init__(self, name=None, books=[], id=0):
+    def __init__(self, id=None, name=None, books=[]):
         self.id = id
         self.name = name
         self.books = books

@@ -6,6 +6,7 @@ from ..util.dto import BookDTO, AuthorDTO
 
 api = BookDTO.api
 book_create = BookDTO.book_create
+book_update = BookDTO.book_update
 book_list = BookDTO.book_list
 author_list = AuthorDTO.author_list
 
@@ -25,7 +26,7 @@ class BooksCollection(Resource):
         return create_book(request.json)
 
     @api.response(201, 'Book successfully updated.')
-    @api.expect(book_create)
+    @api.expect(book_update)
     def put(self):
         """Updates a book."""
         return update_book(request.json)

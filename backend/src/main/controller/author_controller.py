@@ -7,6 +7,7 @@ from ..util.dto import AuthorDTO
 api = AuthorDTO.api
 author_list = AuthorDTO.author_list
 author_create = AuthorDTO.author_create
+author_update = AuthorDTO.author_update
 
 
 @api.route('/')
@@ -24,7 +25,7 @@ class AuthorCollection(Resource):
         return create_author(request.json)
 
     @api.response(201, 'Author successfully updated.')
-    @api.expect(author_create)
+    @api.expect(author_update)
     def put(self):
         """Updates an author."""
         return update_author(request.json)

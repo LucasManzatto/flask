@@ -2,22 +2,30 @@ from backend.src.main import db
 from flask_restplus import abort
 from main.model.author import Author
 from main.model.books import Book, BookSchema
+from main.model.series import Series
 
 
 def create_book(data):
     book = Book.query.filter_by(title=data['title']).first()
     if not book:
         new_book = BookSchema().load(data).data
-        author = Author.query.get(new_book.author_id)
+        author = Author.query.filter(Author.id == new_book.author_id).first()
+        series = Series.query.filter(Series.id == new_book.series_id).first()
         if author:
-            save_changes(new_book)
-            response_object = {
-                'status': 'success',
-                'message': 'Book successfully registered.'
-            }
-            return response_object, 201
+            if series or not new_book.series_id:
+                save_changes(new_book)
+                response_object = {
+                    'status': 'success',
+                    'message': 'Book successfully registered.'
+                }
+                return response_object, 201
+            elif new_book.series_id:
+                abort(400, "Series doesn't exist.")
         else:
-            abort(400, "No author with such ID.")
+            if new_book.author_id:
+                abort(400, "Author doesn't exist.")
+            else:
+                abort(400, "Author field is required.")
     else:
         response_object = {
             'status': 'fail',

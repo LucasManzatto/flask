@@ -13,10 +13,11 @@ class Book(db.Model):
                           nullable=True)
     series = db.relationship("Series", back_populates='books')
 
-    def __init__(self, title, description, author_id=0):
+    def __init__(self, title, description, author_id=None, series_id=None):
         self.title = title
         self.description = description
         self.author_id = author_id
+        self.series_id = series_id
 
     def __repr__(self):
         return f"Book:{self.title} , Author ID:{self.author_id}"
@@ -26,6 +27,7 @@ class BookSchema(Schema):
     description = fields.String()
     title = fields.String()
     author_id = fields.Number()
+    series_id = fields.Number()
 
     @post_load
     def make_book(self, data):
