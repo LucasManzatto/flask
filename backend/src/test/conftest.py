@@ -32,6 +32,11 @@ def init_database(test_client):
     # Create the database and the database table
     # db.drop_all()
     # db.create_all()
+    authors = db.session.query(Author).all()
+    for author in authors:
+        author.series = []
+    db.session.commit()
+    db.session.query(Series).delete()
     db.session.query(Book).delete()
     db.session.query(Author).delete()
     db.session.commit()
