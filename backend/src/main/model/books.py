@@ -20,7 +20,7 @@ class Book(db.Model):
         self.series_id = series_id
 
     def __repr__(self):
-        return f"Book:{self.title} , Author ID:{self.author_id}"
+        return f"Book: ID:{self.id} ,Title:{self.title} , Author ID:{self.author_id}"
 
 
 class BookSchema(Schema):

@@ -1,7 +1,7 @@
 from flask import request
 from flask_restplus import Resource
 
-from ..service.book_service import create_book, get_all_books, get_a_book, delete_book, update_book, get_book_author
+from ..service.book_service import upsert_book, get_all_books, get_a_book, delete_book, get_book_author
 from ..util.dto import BookDTO, AuthorDTO
 
 api = BookDTO.api
@@ -12,41 +12,41 @@ author_list = AuthorDTO.author_list
 
 
 @api.route('/')
-@api.doc(responses={200: 'OK', 400: 'Invalid Argument', 404: 'Book not found.', 500: 'Mapping Key Error'})
+@api.doc(
+    responses={200: 'OK', 201: 'Created', 400: 'Invalid Argument', 404: 'Book not found.', 500: 'Mapping Key Error'})
 class BooksCollection(Resource):
     @api.marshal_list_with(book_list, code=201, envelope='books')
     def get(self):
         """List all books."""
         return get_all_books()
 
-    @api.response(201, 'Book successfully created.')
     @api.expect(book_create)
     def post(self):
         """Creates a new book."""
-        return create_book(request.json)
+        return upsert_book(request.json, update=False)
 
-    @api.response(201, 'Book successfully updated.')
     @api.expect(book_update)
     def put(self):
         """Updates a book."""
-        return update_book(request.json)
+        return upsert_book(request.json, update=True)
 
 
-@api.route('/<int:id>')
+@api.route('/<int:book_id>')
 class BookItem(Resource):
+    @staticmethod
     @api.marshal_with(book_list)
-    def get(self, id):
+    def get(book_id):
         """Find a book by the ID."""
-        return get_a_book(id)
+        return get_a_book(book_id)
 
-    @api.response(201, 'Book successfully deleted.')
-    def delete(self, id):
+    @staticmethod
+    def delete(book_id):
         """Deletes a book."""
-        return delete_book(id)
+        return delete_book(book_id)
 
 
 @api.route('/author/<int:id>')
-class AuthorItem(Resource):
+class BookAuthorItem(Resource):
     @api.marshal_with(author_list)
     def get(self, id):
         """Find the book's author."""
