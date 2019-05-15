@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from main import create_app, db
 from main.model.author import Author
 from main.model.books import Book
+from main.model.series import Series
 from src import blueprint
 
 
@@ -35,9 +36,11 @@ def init_database(test_client):
     db.session.query(Author).delete()
     db.session.commit()
 
+    series = Series(title='Test', description='Test')
     author = Author(name='Test')
     book1 = Book(title="Test Book", description='Teste', author_id=1)
     book2 = Book(title="Test Book 2", description='Teste', author_id=1)
+    db.session.add(series)
     db.session.add(author)
     db.session.commit()
 

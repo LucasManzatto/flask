@@ -56,4 +56,4 @@ def delete_book(book_id):
 def create_new_book(data):
     db.session.add(data)
     db.session.commit()
-    response_created('Book successfully created.')
+    return response_created('Book successfully created.')

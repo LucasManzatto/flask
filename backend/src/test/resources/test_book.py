@@ -1,6 +1,7 @@
 from main.model.books import Book
 
-from main.util.utils import not_found, response_success, bad_request, response_created, message, response_conflict
+from main.util.utils import not_found, bad_request, message, conflict, \
+    success, created
 
 
 def book_test():
@@ -10,14 +11,15 @@ def book_test():
 def test_insert_book(test_client, init_database, session):
     response = test_client.post('/books/', json={'title': 'Test Book New', 'description': 'Teste', 'author_id': '1'
                                                  })
-    assert response_created(response)
+    assert created(response)
+    assert message(response, "Book successfully created.")
     assert session.query(Book).filter_by(title='Test Book New').first()
 
 
-def test_insert_book_with_same_name(test_client, init_database, session):
+def test_insert_existing_book(test_client, init_database, session):
     response = test_client.post('/books/', json={'title': 'Test Book New', 'description': 'Teste', 'author_id': '1'
                                                  })
-    assert response_conflict(response)
+    assert conflict(response)
     assert session.query(Book).filter_by(title='Test Book New').count() == 1
 
 
@@ -61,8 +63,16 @@ def test_get_book(init_database, test_client, db_session):
     db_book = db_session.query(Book).first()
     response = test_client.get(f"/books/{db_book.id}")
     book = response.json
-    assert response_success(response)
+    assert success(response)
     assert book['title'] == db_book.title
+
+
+def test_get_all_books(init_database, test_client, db_session):
+    db_books_size = db_session.query(Book).count()
+    response = test_client.get("/books/")
+    books_size = len(response.json['books'])
+    assert success(response)
+    assert db_books_size == books_size
 
 
 def test_book_not_found(test_client, init_database):
@@ -78,7 +88,7 @@ def test_update_book(db_session, test_client, init_database):
         'author_id': 1}
     response = test_client.put('/books/', json=book_json)
     book = db_session.query(Book).get(1)
-    assert response_success(response)
+    assert success(response)
     assert book.title == 'Test Update'
 
 
@@ -86,7 +96,7 @@ def test_get_book_author(db_session, test_client, init_database):
     book = db_session.query(Book).first()
     response = test_client.get(f'/books/author/{book.id}')
     author = response.json
-    assert response_success('')
+    assert success(response)
     assert author['name'] == book.author.name
 
 
@@ -101,6 +111,6 @@ def test_delete_book(db_session, test_client, init_database):
     response = test_client.delete(f'/books/1')
     book = db_session.query(Book).get(1)
     total = db_session.query(Book).count()
-    assert response_success(response)
+    assert success(response)
     assert not book
     assert total == 2
