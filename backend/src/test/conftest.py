@@ -6,6 +6,7 @@ from main import create_app, db
 from main.model.author import Author
 from main.model.books import Book
 from main.model.series import Series
+from sqlalchemy import create_engine, MetaData
 from src import blueprint
 
 
@@ -21,63 +22,54 @@ def test_client():
     ctx = flask_app.app_context()
     ctx.push()
 
-    yield testing_client  # this is where the testing happens!
+    yield testing_client
 
     ctx.pop()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function', autouse=True)
 def init_database(test_client):
-    print('test')
-    # Create the database and the database table
-    # db.drop_all()
-    # db.create_all()
     authors = db.session.query(Author).all()
+    series = db.session.query(Series).all()
     for author in authors:
         author.series = []
-    db.session.commit()
+    for serie in series:
+        serie.books = []
     db.session.query(Series).delete()
     db.session.query(Book).delete()
     db.session.query(Author).delete()
+
+    author = Author(id=1, name='Test')
+    author_with_book = Author(id=2, name='Test With Book')
+    author_with_series = Author(id=3, name='Test With Series')
+    author_with_series_and_books = Author(id=4, name='Test With Series and Books')
+
+    series = Series(id=1, title='Test 1', description='Test')
+    series_with_author = Series(id=2, title='Test 2', description='Test')
+
+    book = Book(title="Test Book", description='Teste', author_id=author_with_book.id)
+    book2 = Book(title="Test Book 2", description='Teste')
+
+    db.session.bulk_save_objects([series, author_with_book, author, book, book2])
     db.session.commit()
 
-    series = Series(title='Test', description='Test')
-    author = Author(name='Test')
-    book1 = Book(title="Test Book", description='Teste', author_id=1)
-    book2 = Book(title="Test Book 2", description='Teste', author_id=1)
-    db.session.add(series)
-    db.session.add(author)
+    author_with_series_and_books.series.append(series_with_author)
+    author_with_series_and_books.books.append(book2)
+    db.session.add(author_with_series_and_books)
+
+    author_with_series.series.append(series_with_author)
+    db.session.add(author_with_series)
+
     db.session.commit()
-
-    db.session.add(book1)
-    db.session.add(book2)
-    db.session.commit()
-
-    yield db  # this is where the testing happens!
+    yield db
 
 
-@pytest.yield_fixture(scope='function')
-def session(init_database):
-    db.session.begin_nested()
-    yield db.session
-    db.session.rollback()
+# @pytest.yield_fixture(scope='function')
+# def session():
+#     db.session.begin_nested()
+#     yield db.session
+#     db.session.rollback()
 
-
-@pytest.fixture(scope='session')
-def app():
-    app = create_app('test')
-    app.register_blueprint(blueprint)
-    ctx = app.app_context()
-    ctx.push()
-    yield app
-    ctx.pop()
-
-
-# @pytest.fixture(scope='session')
-# def testapp(app):
-#     return app.test_client()
-#
-#
 @pytest.fixture(scope='session')
 def _db():
     return db

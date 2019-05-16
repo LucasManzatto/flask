@@ -1,9 +1,8 @@
-from main.util.utils import not_found, response_success, bad_request, response_created, message, response_conflict, \
-    success, created, conflict
+from main.util.utils import message, success, created, conflict
 from main.model.author import Author
 
 
-def test_get_all_authors(init_database, test_client, db_session):
+def test_get_all_authors(test_client, db_session):
     authors_from_db_size = db_session.query(Author).count()
     response = test_client.get('/authors/')
     authors_size = len(response.json['authors'])
@@ -11,7 +10,7 @@ def test_get_all_authors(init_database, test_client, db_session):
     assert authors_from_db_size == authors_size
 
 
-def test_get_author(init_database, test_client, db_session):
+def test_get_author(test_client, db_session):
     author_from_db = db_session.query(Author).first()
     response = test_client.get(f'/authors/{author_from_db.id}')
     author = response.json
@@ -19,7 +18,7 @@ def test_get_author(init_database, test_client, db_session):
     assert author['id'] == author_from_db.id
 
 
-def test_create_author(init_database, test_client, db_session):
+def test_create_author(test_client, db_session):
     author_json = {
         'name': 'Test Create'
     }
@@ -29,16 +28,16 @@ def test_create_author(init_database, test_client, db_session):
     assert db_session.query(Author).filter_by(name='Test Create').first()
 
 
-def test_create_existing_author(init_database, test_client, db_session):
+def test_create_existing_author(test_client, db_session):
     author_json = {
-        'name': 'Test Create'
+        'name': 'Test'
     }
     response = test_client.post('/authors/', json=author_json)
     assert conflict(response)
-    assert db_session.query(Author).filter_by(name='Test Create').count() == 1
+    assert db_session.query(Author).filter_by(name='Test').count() == 1
 
 
-def test_create_author_with_series(init_database, test_client, db_session):
+def test_create_author_with_series(test_client, db_session):
     author_json = {
         'name': 'Test Create 2',
         'series_ids': [1]
@@ -51,13 +50,43 @@ def test_create_author_with_series(init_database, test_client, db_session):
     assert author.series[0].id == author_json['series_ids'][0]
 
 
-def test_update_author(init_database, test_client, db_session):
+def test_update_author(test_client, db_session):
     author_json = {
         'id': 1,
-        'name': 'Test Update'
+        'name': 'Test Update',
+        'series_ids': [1]
     }
     response = test_client.put('/authors/', json=author_json)
-    author = db_session.query(Author).get(1)
+    author = db_session.query(Author).filter_by(name='Test Update').first()
     assert success(response)
     assert message(response, "Author successfully updated.")
     assert author_json['name'] == author.name
+    assert author.series[0].id == author_json['series_ids'][0]
+
+
+def test_delete_author(test_client, db_session):
+    response = test_client.delete('/authors/1')
+    author = db_session.query(Author).get(1)
+    assert success(response)
+    assert not author
+
+
+def test_delete_author_with_books(test_client, db_session):
+    response = test_client.delete('/authors/2')
+    author = db_session.query(Author).get(2)
+    assert conflict(response)
+    assert author
+
+
+def test_delete_author_with_series(test_client, db_session):
+    response = test_client.delete('/authors/3')
+    author = db_session.query(Author).get(3)
+    assert conflict(response)
+    assert author
+
+
+def test_delete_author_with_series_and_books(test_client, db_session):
+    response = test_client.delete('/authors/4')
+    author = db_session.query(Author).get(4)
+    assert conflict(response)
+    assert author

@@ -2,38 +2,27 @@ from backend.src.main import db
 from flask_restplus import abort
 from main.model.books import Book, BookSchema
 from main.model.series import Series, SeriesSchema
+from main.util.utils import response_created, response_success, response_conflict
 
 
-def create_series(data):
+def upsert_series(data, update):
     series = Series.query.filter_by(title=data['title']).first()
-    if not series:
+    if not series or update:
         books_ids = data.pop('books_ids', [])
-        new_series = SeriesSchema().load(data).data
         books = Book.query.filter(Book.id.in_(books_ids)).all()
-        new_series.books = books
-        db.session.add(new_series)
-        response_object = {
-            'status': 'success',
-            'message': 'Series successfully registered.'
-        }
-        db.session.commit()
-        return response_object, 201
+        if update:
+            new_series = Series.query.get(data['id'])
+            new_series.books = books
+            Series.query.filter_by(id=data['id']).update(data)
+            db.session.commit()
+            return response_success('Series updated successfully.')
+        else:
+            new_series = SeriesSchema().load(data).data
+            new_series.books = books
+            db.session.commit()
+            return response_created('Series created successfully.')
     else:
-        response_object = {
-            'status': 'fail',
-            'message': 'Series already exists. Please choose another title.',
-        }
-        return response_object, 409
-
-
-def update_series(series):
-    books_ids = series.pop('books_ids', [])
-    books = Book.query.filter(Book.id.in_(books_ids)).all()
-    db_series = Series.query.get(series['id'])
-    db_series.books = books
-    Series.query.filter_by(id=series['id']).update(series)
-    db.session.commit()
-    return None, 201
+        return response_conflict('Series already exists. Please choose another title.')
 
 
 def get_all_series():

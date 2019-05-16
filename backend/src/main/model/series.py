@@ -11,9 +11,11 @@ class Series(db.Model):
     books = db.relationship("Book", back_populates='series')
     authors = db.relationship("Author", back_populates='series', secondary=author_series)
 
-    def __init__(self, title, description):
+    def __init__(self, title, description, id=None,authors=[]):
+        self.id = id
         self.title = title
         self.description = description
+        self.authors = authors
 
     def __repr__(self):
         return f"Series:{self.title}"

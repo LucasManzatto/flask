@@ -1,17 +1,18 @@
 from flask import request
 from flask_restplus import Resource
-from main.service.series_service import get_all_series, create_series, update_series, get_a_series, delete_series
+from main.service.series_service import get_all_series, upsert_series, get_a_series, delete_series
 from ..util.dto import SeriesDTO
 
 api = SeriesDTO.api
 series_create = SeriesDTO.series_create
+series_update = SeriesDTO.series_update
 series_list = SeriesDTO.series_list
 
 
 @api.route('/')
 @api.doc(responses={200: 'OK', 400: 'Invalid Argument', 404: 'Series not found.', 500: 'Mapping Key Error'})
 class SeriesCollection(Resource):
-    @api.marshal_list_with(series_list, code=201)
+    @api.marshal_list_with(series_list, code=201, envelope='series')
     def get(self):
         """List all series."""
         return get_all_series()
@@ -20,13 +21,13 @@ class SeriesCollection(Resource):
     @api.expect(series_create)
     def post(self):
         """Creates a new series."""
-        return create_series(request.json)
+        return upsert_series(request.json, update=False)
 
     @api.response(201, 'Series successfully updated.')
-    @api.expect(series_create)
+    @api.expect(series_update)
     def put(self):
         """Updates a series."""
-        return update_series(request.json)
+        return upsert_series(request.json, update=True)
 
 
 @api.route('/<int:id>')

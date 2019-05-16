@@ -76,7 +76,6 @@ class SeriesDTO:
     api = api.namespace('series', description='Operations related to series.')
 
     series_base = api.model('Series_Base', {
-        'id': fields.Integer(description='The ID of the series.'),
         'title': fields.String(required=True, description='The title of the series.'),
         'description': fields.String(required=True, description='The description of the series.'),
     })
@@ -95,7 +94,13 @@ class SeriesDTO:
     series_create = api.clone('Series_Create', series_base, {
         'books_ids': fields.List(fields.Integer(required=False, description="The series's books."))
     })
+
+    series_update = api.clone('Series_Update', series_create, {
+        'id': fields.Integer(description='The ID of the series.'),
+    })
+
     series_list = api.clone('Series_List', series_base, {
+        'id': fields.Integer(description='The ID of the series.'),
         'books': fields.Nested(series_books),
         'authors': fields.Nested(series_authors)
     })

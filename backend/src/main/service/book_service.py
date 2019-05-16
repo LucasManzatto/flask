@@ -9,9 +9,7 @@ from main.util.utils import response_success, response_conflict, response_create
 def upsert_book(data, update):
     book = Book.query.filter_by(title=data['title']).first()
     new_book = BookSchema().load(data).data
-    if book and not update:
-        return response_conflict('Book already exists. Please choose another title.')
-    else:
+    if not book or update:
         author = Author.query.filter(Author.id == new_book.author_id).first()
         series = Series.query.filter(Series.id == new_book.series_id).first()
         if author:
@@ -23,6 +21,8 @@ def upsert_book(data, update):
             if not new_book.author_id:
                 return response_bad_request("Author field is required.")
             return response_bad_request("Author doesn't exist.")
+    else:
+        return response_conflict('Book already exists. Please choose another title.')
 
 
 def update_existing_book(data):
