@@ -21,7 +21,7 @@ class GenericTests:
         assert success(response)
         assert table_row_size == response_size
 
-    def insert(self, db_session, test_client, data=None, json_data=None, existing=False):
+    def insert(self, db_session, test_client, data=None, json_data=None, existing=False, update=False):
         if json_data is None:
             json_data = {}
         if existing:
@@ -31,21 +31,25 @@ class GenericTests:
         else:
             object_json = json_data
         key = list(filter(lambda x: x != 'id', (*object_json,)))[0]
-        response = test_client.post(f'/{self.endpoint}/', json=object_json)
+        if update:
+            response = test_client.put(f'/{self.endpoint}/', json=object_json)
+        else:
+            response = test_client.post(f'/{self.endpoint}/', json=object_json)
+        created_object = db_session.query(self.model).filter_by(name=object_json[key]).first()
+        only_one_created = db_session.query(self.model).filter_by(name=object_json[key]).count() == 1
         if existing:
             assert conflict(response)
         else:
-            assert created(response)
-            assert message(response, "Author successfully created.")
-        assert db_session.query(self.model).filter_by(name=object_json[key]).first()
-        assert db_session.query(self.model).filter_by(name=object_json[key]).count() == 1
+            assert success(response) if update else created(response)
+        assert created_object
+        assert only_one_created
 
     def delete(self, db_session, test_client, id, has_fk=False):
         response = test_client.delete(f'/{self.endpoint}/{id}')
         db_data = db_session.query(self.model).get(id)
         if has_fk:
             assert conflict(response)
-            assert not db_data
+            assert db_data
         else:
             assert success(response)
             assert not db_data

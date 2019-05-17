@@ -28,7 +28,7 @@ def test_insert_existing_author(test_client, db_session):
 
 def test_insert_author_with_series(test_client, db_session):
     author_json = {
-        'name': 'Test Create 2',
+        'name': 'Test Create',
         'series_ids': [1]
     }
     generic_tests.insert(db_session, test_client, json_data=author_json)
@@ -40,12 +40,7 @@ def test_update_author(test_client, db_session):
         'name': 'Test Update',
         'series_ids': [1]
     }
-    response = test_client.put('/authors/', json=author_json)
-    author = db_session.query(Author).filter_by(name=author_json['name']).first()
-    assert success(response)
-    assert message(response, "Author successfully updated.")
-    assert author_json['name'] == author.name
-    assert author.series[0].id == author_json['series_ids'][0]
+    generic_tests.insert(db_session, test_client, json_data=author_json, update=True)
 
 
 def test_delete_author(test_client, db_session):
