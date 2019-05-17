@@ -5,8 +5,11 @@ from test.resources.generics import GenericTests
 endpoint = 'authors'
 model = Author
 model_schema = AuthorSchema()
+filter_by = Author.name
+filter_by_key = 'name'
 
-generic_tests = GenericTests(endpoint=endpoint, model=model, model_schema=model_schema)
+generic_tests = GenericTests(endpoint=endpoint, model=model, model_schema=model_schema, filter_by=filter_by,
+                             filter_by_key=filter_by_key)
 
 
 def test_get_one_author(test_client, db_session):
@@ -15,6 +18,10 @@ def test_get_one_author(test_client, db_session):
 
 def test_get_all_authors(test_client, db_session):
     generic_tests.get_all(test_client, db_session)
+
+
+def test_get_author_not_found(test_client):
+    generic_tests.get_not_found(test_client)
 
 
 def test_insert_author(test_client, db_session):
