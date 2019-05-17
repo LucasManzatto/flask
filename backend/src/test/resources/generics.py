@@ -1,3 +1,4 @@
+from main.model.author import Author
 from main.util.utils import success, created, message, conflict
 
 
@@ -20,8 +21,15 @@ class GenericTests:
         assert success(response)
         assert table_row_size == response_size
 
-    def insert(self, db_session, test_client, data, existing=False):
-        object_json = self.model_schema.dump(data)
+    def insert(self, db_session, test_client, data=None, json_data=None, existing=False):
+        if json_data is None:
+            json_data = {}
+        if existing:
+            data = db_session.query(self.model).first()
+        if data:
+            object_json = self.model_schema.dump(data)
+        else:
+            object_json = json_data
         key = list(filter(lambda x: x != 'id', (*object_json,)))[0]
         response = test_client.post(f'/{self.endpoint}/', json=object_json)
         if existing:

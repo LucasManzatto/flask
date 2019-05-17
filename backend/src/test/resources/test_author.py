@@ -18,13 +18,12 @@ def test_get_all_authors(test_client, db_session):
 
 
 def test_insert_author(test_client, db_session):
-    author = Author(name='Test Create')
+    author = Author(name='Test Insert')
     generic_tests.insert(db_session, test_client, data=author)
 
 
 def test_insert_existing_author(test_client, db_session):
-    author = db_session.query(Author).first()
-    generic_tests.insert(db_session, test_client, data=author, existing=True)
+    generic_tests.insert(db_session, test_client, existing=True)
 
 
 def test_insert_author_with_series(test_client, db_session):
@@ -32,12 +31,7 @@ def test_insert_author_with_series(test_client, db_session):
         'name': 'Test Create 2',
         'series_ids': [1]
     }
-    response = test_client.post('/authors/', json=author_json)
-    author = db_session.query(Author).filter_by(name=author_json['name']).first()
-    assert created(response)
-    assert message(response, "Author successfully created.")
-    assert author
-    assert author.series[0].id == author_json['series_ids'][0]
+    generic_tests.insert(db_session, test_client, json_data=author_json)
 
 
 def test_update_author(test_client, db_session):
