@@ -1,28 +1,39 @@
 from backend.src.main import db
-from flask_restplus import abort
 from main.model.books import Book, BookSchema
 from main.model.series import Series, SeriesSchema
-from main.util.utils import response_created, response_success, response_conflict
+from main.util.utils import response_created, response_success, response_conflict, response_bad_request
+from marshmallow import ValidationError
 
 
 def upsert_series(data, update):
+    books_ids = data.pop('books_ids', [])
+    books = Book.query.filter(Book.id.in_(books_ids)).all()
+
+    try:
+        new_series = SeriesSchema().load(data)
+    except ValidationError as err:
+        return response_bad_request(err.messages)
+
     series = Series.query.filter_by(title=data['title']).first()
     if not series or update:
-        books_ids = data.pop('books_ids', [])
-        books = Book.query.filter(Book.id.in_(books_ids)).all()
-        if update:
-            new_series = Series.query.get(data['id'])
-            new_series.books = books
-            Series.query.filter_by(id=data['id']).update(data)
-            db.session.commit()
-            return response_success('Series updated successfully.')
-        else:
-            new_series = SeriesSchema().load(data).data
-            new_series.books = books
-            db.session.commit()
-            return response_created('Series created successfully.')
+        return upsert_series(books, data) if update else create_series(books, new_series)
     else:
         return response_conflict('Series already exists. Please choose another title.')
+
+
+def create_series(books, new_series):
+    new_series.books = books
+    db.session.add(new_series)
+    db.session.commit()
+    return response_created('Series created successfully.')
+
+
+def update_series(books, data):
+    new_series = Series.query.get(data['id'])
+    new_series.books = books
+    Series.query.filter_by(id=data['id']).update(data)
+    db.session.commit()
+    return response_success('Series updated successfully.')
 
 
 def get_all_series():

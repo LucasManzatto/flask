@@ -11,7 +11,9 @@ class Series(db.Model):
     books = db.relationship("Book", back_populates='series')
     authors = db.relationship("Author", back_populates='series', secondary=author_series)
 
-    def __init__(self, title, description, id=None,authors=[]):
+    def __init__(self, title, description=None, id=None, authors=None):
+        if authors is None:
+            authors = []
         self.id = id
         self.title = title
         self.description = description
@@ -22,8 +24,9 @@ class Series(db.Model):
 
 
 class SeriesSchema(Schema):
+    id = fields.Integer()
     description = fields.String()
-    title = fields.String()
+    title = fields.String(required=True)
 
     @post_load
     def make_series(self, data):

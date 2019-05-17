@@ -3,27 +3,47 @@ from backend.src.main import db
 from main.model.author import Author, AuthorSchema
 from main.model.series import Series
 from main.util.utils import response_created, response_conflict, response_success, response_bad_request
+from marshmallow import ValidationError, INCLUDE
 
 
 def upsert_author(data, update):
+    series = get_series(data)
+    try:
+        if not update:
+            data.pop('id', None)
+        author = AuthorSchema(unknown=INCLUDE).load(data)
+    except ValidationError as err:
+        print(err.messages)
+        return response_bad_request(err.messages)
+
     author_from_db = Author.query.filter_by(name=data['name']).first()
     if not author_from_db:
-        series_ids = data.pop('series_ids', [])
-        series = Series.query.filter(Series.id.in_(series_ids)).all()
-        if update:
-            author = Author.query.get(data['id'])
-            author.series = series
-            Author.query.filter(Author.id == data['id']).update(data)
-            db.session.commit()
-            return response_success('Author successfully updated.')
-        else:
-
-            author = AuthorSchema().load(data).data
-            author.series = series
-            save_changes(author)
-            return response_created('Author successfully created.')
+        return update_existing_author(data, series) if update \
+            else create_new_author(author, series)
     else:
         return response_conflict('Author already exists. Please choose another name.')
+
+
+def get_series(data):
+    series_ids = data.pop('series_ids', [])
+    series = Series.query.filter(Series.id.in_(series_ids)).all()
+    return series
+
+
+def create_new_author(new_author, series):
+    print(new_author)
+    del new_author.id
+    new_author.series = series
+    save_changes(new_author)
+    return response_created('Author successfully created.')
+
+
+def update_existing_author(data, series):
+    author = Author.query.get(data['id'])
+    author.series = series
+    Author.query.filter(Author.id == data['id']).update(data)
+    db.session.commit()
+    return response_success('Author successfully updated.')
 
 
 def get_all_authors():

@@ -1,12 +1,10 @@
 import os
 
 import pytest
-from flask_sqlalchemy import SQLAlchemy
 from main import create_app, db
 from main.model.author import Author
 from main.model.books import Book
 from main.model.series import Series
-from sqlalchemy import create_engine, MetaData
 from src import blueprint
 
 
@@ -14,11 +12,8 @@ from src import blueprint
 def test_client():
     flask_app = create_app('test')
     flask_app.register_blueprint(blueprint)
-    # Flask provides a way to test your application by exposing the Werkzeug test Client
-    # and handling the context locals for you.
     testing_client = flask_app.test_client()
 
-    # Establish an application context before running the tests.
     ctx = flask_app.app_context()
     ctx.push()
 
@@ -64,28 +59,6 @@ def init_database(test_client):
     yield db
 
 
-# @pytest.yield_fixture(scope='function')
-# def session():
-#     db.session.begin_nested()
-#     yield db.session
-#     db.session.rollback()
-
 @pytest.fixture(scope='session')
 def _db():
     return db
-
-# @pytest.fixture(scope='function', autouse=True)
-# def session(_db):
-#     connection = _db.engine.connect()
-#     transaction = connection.begin()
-#
-#     options = dict(bind=connection, binds={})
-#     session_ = _db.create_scoped_session(options=options)
-#
-#     _db.session = session_
-#
-#     yield session_
-#
-#     transaction.rollback()
-#     connection.close()
-#     session_.remove()

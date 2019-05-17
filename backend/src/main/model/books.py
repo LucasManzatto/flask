@@ -13,28 +13,24 @@ class Book(db.Model):
                           nullable=True)
     series = db.relationship("Series", back_populates='books')
 
-    def __init__(self, title, description, author_id=None, series_id=None):
+    def __init__(self, title, description, author_id=None, series_id=None, id=None):
         self.title = title
         self.description = description
         self.author_id = author_id
         self.series_id = series_id
+        self.id = id
 
     def __repr__(self):
         return f"Book: ID:{self.id} ,Title:{self.title} , Author ID:{self.author_id}"
 
 
 class BookSchema(Schema):
+    id = fields.Integer()
+    title = fields.String(required=True)
     description = fields.String()
-    title = fields.String()
-    author_id = fields.Number()
+    author_id = fields.Number(required=True)
     series_id = fields.Number()
 
     @post_load
     def make_book(self, data):
         return Book(**data)
-
-# class BookSchema(ModelSchema):
-#     class Meta:
-#         model: Book
-#         sqla_session = db.session
-#         transient = True

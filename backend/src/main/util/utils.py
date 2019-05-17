@@ -56,4 +56,4 @@ def response_conflict(msg):
 
 
 def response_bad_request(msg):
-    abort(400, msg)
+    return abort(400, msg)

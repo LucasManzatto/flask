@@ -1,49 +1,39 @@
 from main.util.utils import message, success, created, conflict
-from main.model.author import Author
+from main.model.author import Author, AuthorSchema
+from test.resources.generics import GenericTests
+
+endpoint = 'authors'
+model = Author
+model_schema = AuthorSchema()
+
+generic_tests = GenericTests(endpoint=endpoint, model=model, model_schema=model_schema)
+
+
+def test_get_one_author(test_client, db_session):
+    generic_tests.get_one(test_client, db_session)
 
 
 def test_get_all_authors(test_client, db_session):
-    authors_from_db_size = db_session.query(Author).count()
-    response = test_client.get('/authors/')
-    authors_size = len(response.json['authors'])
-    assert success(response)
-    assert authors_from_db_size == authors_size
+    generic_tests.get_all(test_client, db_session)
 
 
-def test_get_author(test_client, db_session):
-    author_from_db = db_session.query(Author).first()
-    response = test_client.get(f'/authors/{author_from_db.id}')
-    author = response.json
-    assert success(response)
-    assert author['id'] == author_from_db.id
+def test_insert_author(test_client, db_session):
+    author = Author(name='Test Create')
+    generic_tests.insert(db_session, test_client, data=author)
 
 
-def test_create_author(test_client, db_session):
-    author_json = {
-        'name': 'Test Create'
-    }
-    response = test_client.post('/authors/', json=author_json)
-    assert created(response)
-    assert message(response, "Author successfully created.")
-    assert db_session.query(Author).filter_by(name='Test Create').first()
+def test_insert_existing_author(test_client, db_session):
+    author = db_session.query(Author).first()
+    generic_tests.insert(db_session, test_client, data=author, existing=True)
 
 
-def test_create_existing_author(test_client, db_session):
-    author_json = {
-        'name': 'Test'
-    }
-    response = test_client.post('/authors/', json=author_json)
-    assert conflict(response)
-    assert db_session.query(Author).filter_by(name='Test').count() == 1
-
-
-def test_create_author_with_series(test_client, db_session):
+def test_insert_author_with_series(test_client, db_session):
     author_json = {
         'name': 'Test Create 2',
         'series_ids': [1]
     }
     response = test_client.post('/authors/', json=author_json)
-    author = db_session.query(Author).filter_by(name='Test Create 2').first()
+    author = db_session.query(Author).filter_by(name=author_json['name']).first()
     assert created(response)
     assert message(response, "Author successfully created.")
     assert author
@@ -57,7 +47,7 @@ def test_update_author(test_client, db_session):
         'series_ids': [1]
     }
     response = test_client.put('/authors/', json=author_json)
-    author = db_session.query(Author).filter_by(name='Test Update').first()
+    author = db_session.query(Author).filter_by(name=author_json['name']).first()
     assert success(response)
     assert message(response, "Author successfully updated.")
     assert author_json['name'] == author.name
@@ -65,28 +55,16 @@ def test_update_author(test_client, db_session):
 
 
 def test_delete_author(test_client, db_session):
-    response = test_client.delete('/authors/1')
-    author = db_session.query(Author).get(1)
-    assert success(response)
-    assert not author
+    generic_tests.delete(db_session=db_session, test_client=test_client, id=1)
 
 
 def test_delete_author_with_books(test_client, db_session):
-    response = test_client.delete('/authors/2')
-    author = db_session.query(Author).get(2)
-    assert conflict(response)
-    assert author
+    generic_tests.delete(db_session=db_session, test_client=test_client, id=2, has_fk=True)
 
 
 def test_delete_author_with_series(test_client, db_session):
-    response = test_client.delete('/authors/3')
-    author = db_session.query(Author).get(3)
-    assert conflict(response)
-    assert author
+    generic_tests.delete(db_session=db_session, test_client=test_client, id=3, has_fk=True)
 
 
 def test_delete_author_with_series_and_books(test_client, db_session):
-    response = test_client.delete('/authors/4')
-    author = db_session.query(Author).get(4)
-    assert conflict(response)
-    assert author
+    generic_tests.delete(db_session=db_session, test_client=test_client, id=4, has_fk=True)
