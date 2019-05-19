@@ -1,7 +1,7 @@
 from flask import request
 from flask_restplus import Resource
-from main.service.author_service import get_all_authors, upsert_author, get_an_author, delete_author
 
+from backend.src.main.service.author_service import get_all_authors, upsert_author, get_an_author, delete_author
 from ..util.dto import AuthorDTO
 
 api = AuthorDTO.api

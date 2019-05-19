@@ -1,9 +1,9 @@
-import sqlalchemy
-from backend.src.main import db
-from main.model.author import Author, AuthorSchema
-from main.model.series import Series
-from main.util.utils import response_created, response_conflict, response_success, response_bad_request
 from marshmallow import ValidationError, INCLUDE
+
+from backend.src.main import db
+from backend.src.main.model.author import Author, AuthorSchema
+from backend.src.main.model.series import Series
+from backend.src.main.util.utils import response_created, response_conflict, response_success, response_bad_request
 
 
 def upsert_author(data, update):

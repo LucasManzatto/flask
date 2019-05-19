@@ -1,8 +1,9 @@
-from backend.src.main import db
-from main.model.books import Book, BookSchema
-from main.model.series import Series, SeriesSchema
-from main.util.utils import response_created, response_success, response_conflict, response_bad_request
 from marshmallow import ValidationError
+
+from backend.src.main import db
+from backend.src.main.model.books import Book
+from backend.src.main.model.series import Series, SeriesSchema
+from backend.src.main.util.utils import response_created, response_success, response_conflict, response_bad_request
 
 
 def upsert_series(data, update):

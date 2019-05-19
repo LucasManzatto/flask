@@ -1,6 +1,7 @@
-from backend.src.main import db
-from main.model.author import author_series
 from marshmallow import post_load, Schema, fields
+
+from backend.src.main import db
+from backend.src.main.model.author import author_series
 
 
 class Series(db.Model):
@@ -24,8 +25,8 @@ class Series(db.Model):
 
 
 class SeriesSchema(Schema):
-    id = fields.Integer()
-    description = fields.String()
+    id = fields.Integer(allow_none=True)
+    description = fields.String(allow_none=True)
     title = fields.String(required=True)
 
     @post_load

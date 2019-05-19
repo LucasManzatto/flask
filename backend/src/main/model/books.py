@@ -1,5 +1,6 @@
-from backend.src.main import db
 from marshmallow import post_load, Schema, fields
+
+from backend.src.main import db
 
 
 class Book(db.Model):
@@ -13,7 +14,7 @@ class Book(db.Model):
                           nullable=True)
     series = db.relationship("Series", back_populates='books')
 
-    def __init__(self, title, description, author_id=None, series_id=None, id=None):
+    def __init__(self, title, description, series_id=None, author_id=None, id=None):
         self.title = title
         self.description = description
         self.author_id = author_id
@@ -25,11 +26,11 @@ class Book(db.Model):
 
 
 class BookSchema(Schema):
-    id = fields.Integer()
+    id = fields.Integer(allow_none=True)
     title = fields.String(required=True)
-    description = fields.String()
+    description = fields.String(allow_none=True)
     author_id = fields.Number(required=True)
-    series_id = fields.Number()
+    series_id = fields.Number(allow_none=True)
 
     @post_load
     def make_book(self, data):
