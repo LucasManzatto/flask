@@ -61,6 +61,10 @@ def get_book_author(book_id):
         abort(400, 'Book not found.')
 
 
+def get_book_genres(book_id):
+    return Genre.query.join(Genre.books).filter(Book.id == book_id).all()
+
+
 def delete_book(book_id):
     Book.query.filter_by(id=book_id).delete(synchronize_session=False)
     db.session.commit()

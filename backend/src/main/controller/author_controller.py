@@ -1,13 +1,16 @@
 from flask import request
 from flask_restplus import Resource
 
-from backend.src.main.service.author_service import get_all_authors, upsert_author, get_an_author, delete_author
+from backend.src.main.service.author_service import get_all_authors, upsert_author, get_an_author, delete_author, \
+    get_author_books, get_author_series
 from backend.src.main.util.dto import AuthorDTO
 
 api = AuthorDTO.api
 author_list = AuthorDTO.author_list
 author_create = AuthorDTO.author_create
 author_update = AuthorDTO.author_update
+author_books = AuthorDTO.author_books
+author_series = AuthorDTO.author_series
 
 
 @api.route('/')
@@ -41,3 +44,19 @@ class BookItem(Resource):
     def delete(author_id):
         """Deletes an author."""
         return delete_author(author_id)
+
+
+@api.route('/<int:id>/books/')
+class BookCollection(Resource):
+    @api.marshal_with(author_books)
+    def get(self, id):
+        """Find the author books."""
+        return get_author_books(id)
+
+
+@api.route('/<int:id>/series/')
+class BookCollection(Resource):
+    @api.marshal_with(author_series)
+    def get(self, id):
+        """Find the author series."""
+        return get_author_series(id)

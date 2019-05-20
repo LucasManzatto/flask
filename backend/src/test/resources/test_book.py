@@ -67,8 +67,17 @@ def test_delete_book_not_found(db_session, test_client):
 
 
 def test_get_book_author(db_session, test_client):
+    generic_tests.get_relationship_data(db_session=db_session, test_client=test_client, relationship='author')
+    # book = db_session.query(Book).first()
+    # response = test_client.get(f'/books/{book.id}/author/')
+    # author = response.json
+    # assert success(response)
+    # assert author['name'] == book.author.name
+
+
+def test_get_book_genres(db_session, test_client):
     book = db_session.query(Book).first()
-    response = test_client.get(f'/books/author/{book.id}')
-    author = response.json
+    response = test_client.get(f'/books/{book.id}/genres/')
+    genres = response.json
     assert success(response)
-    assert author['name'] == book.author.name
+    assert len(genres) == len(book.genres)
