@@ -41,9 +41,9 @@ class BookItem(Resource):
         return get_an_author(id)
 
     @staticmethod
-    def delete(author_id):
+    def delete(id):
         """Deletes an author."""
-        return delete_author(author_id)
+        return delete_author(id)
 
 
 @api.route('/<int:id>/books/')

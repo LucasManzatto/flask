@@ -10,7 +10,6 @@ from backend.src.main.util.utils import response_created, response_conflict, res
 def upsert_author(data, update):
     series = get_series(data)
     try:
-        data.pop('id', None)
         author = AuthorSchema(unknown=INCLUDE).load(data)
     except ValidationError as err:
         print(err.messages)

@@ -20,23 +20,14 @@ class GenericTests:
         assert response.json['id'] == object_from_db.id
 
     def get_relationship_data(self, test_client, db_session, relationship):
-        object_from_db = db_session.query(self.model).options(joinedload(relationship)).first()
+        object_from_db = db_session.query(self.model).options(joinedload(relationship)).first().__dict__[relationship]
         response = test_client.get(f'/{self.endpoint}/1/{relationship}/')
-        print(object_from_db.__dict__[relationship])
         relationship_objects = response.json
         assert success(response)
-        if isinstance(object_from_db.__dict__[relationship], list):
-            assert len(object_from_db.__dict__[relationship]) == len(relationship_objects)
+        if isinstance(object_from_db, list):
+            assert len(object_from_db) == len(relationship_objects)
         else:
-            assert object_from_db.__dict__[relationship].id == relationship_objects['id']
-
-    def get_model_dict(self, model):
-        return dict((column.name, getattr(model, column.name))
-                    for column in model.__table__.columns)
-
-    def object_as_dict(self, obj):
-        return {c.key: getattr(obj, c.key)
-                for c in inspect(obj).mapper.column_attrs}
+            assert object_from_db.id == relationship_objects['id']
 
     def get_all(self, test_client, db_session):
         table_row_size = db_session.query(self.model).count()

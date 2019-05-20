@@ -25,6 +25,14 @@ def test_get_book_not_found(test_client):
     generic_tests.get_not_found(test_client)
 
 
+def test_get_book_author(db_session, test_client):
+    generic_tests.get_relationship_data(db_session=db_session, test_client=test_client, relationship='author')
+
+
+def test_get_book_genres(db_session, test_client):
+    generic_tests.get_relationship_data(db_session=db_session, test_client=test_client, relationship='genres')
+
+
 def test_insert_book(test_client, db_session):
     book = Book(title='Test Insert', description='Teste', author_id=1)
     generic_tests.insert(db_session=db_session, test_client=test_client, data=book)
@@ -64,20 +72,3 @@ def test_delete_book(db_session, test_client):
 
 def test_delete_book_not_found(db_session, test_client):
     generic_tests.delete(db_session=db_session, test_client=test_client, id=-1, found=False)
-
-
-def test_get_book_author(db_session, test_client):
-    generic_tests.get_relationship_data(db_session=db_session, test_client=test_client, relationship='author')
-    # book = db_session.query(Book).first()
-    # response = test_client.get(f'/books/{book.id}/author/')
-    # author = response.json
-    # assert success(response)
-    # assert author['name'] == book.author.name
-
-
-def test_get_book_genres(db_session, test_client):
-    book = db_session.query(Book).first()
-    response = test_client.get(f'/books/{book.id}/genres/')
-    genres = response.json
-    assert success(response)
-    assert len(genres) == len(book.genres)

@@ -38,7 +38,7 @@ class SeriesItem(Resource):
         """Find a series by the ID."""
         return get_a_series(id)
 
-    @api.response(201, 'Series successfully deleted.')
+    @api.response(200, 'Series successfully deleted.')
     def delete(self, id):
         """Deletes a series."""
         return delete_series(id)
