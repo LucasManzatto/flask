@@ -1,10 +1,10 @@
 
-from flask_restplus import Api
 from flask import Blueprint
+from flask_restplus import Api
 
-from .main.controller.book_controller import api as book_ns
-from .main.controller.author_controller import api as author_ns
-from .main.controller.series_controller import api as series_ns
+from backend.src.main.controller.author_controller import api as author_ns
+from backend.src.main.controller.book_controller import api as book_ns
+from backend.src.main.controller.series_controller import api as series_ns
 
 blueprint = Blueprint('api', __name__)
 

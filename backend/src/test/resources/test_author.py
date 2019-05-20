@@ -1,6 +1,5 @@
-from main.util.utils import message, success, created, conflict
-from main.model.author import Author, AuthorSchema
-from test.resources.generics import GenericTests
+from backend.src.main.model.author import Author, AuthorSchema
+from backend.src.test.resources.generics import GenericTests
 
 endpoint = 'authors'
 model = Author
@@ -29,8 +28,12 @@ def test_insert_author(test_client, db_session):
     generic_tests.insert(db_session, test_client, data=author)
 
 
-def test_insert_existing_author(test_client, db_session):
+def test_insert_author_duplicated(test_client, db_session):
     generic_tests.insert(db_session, test_client, existing=True)
+
+
+def test_author_missing_arguments(test_client, db_session):
+    generic_tests.insert(db_session, test_client, missing_arguments=True, json_data={})
 
 
 def test_insert_author_with_series(test_client, db_session):

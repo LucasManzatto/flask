@@ -2,8 +2,8 @@
 # from main.model.series import Series, SeriesSchema
 # from main.util.utils import not_found, bad_request, message, conflict, \
 #     success, created
-#
-#
+
+
 # def test_get_all_series(test_client, db_session):
 #     db_series_size = db_session.query(Series).count()
 #     response = test_client.get('/series/')

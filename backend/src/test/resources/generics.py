@@ -1,5 +1,6 @@
-from main.model.author import Author
-from main.util.utils import success, created, message, conflict, not_found
+from marshmallow import ValidationError
+
+from backend.src.main.util.utils import success, created, conflict, not_found, bad_request
 
 
 class GenericTests:
@@ -27,7 +28,8 @@ class GenericTests:
         response = test_client.get(f'/{self.endpoint}/-1')
         assert not_found(response)
 
-    def insert(self, db_session, test_client, data=None, json_data=None, existing=False, update=False):
+    def insert(self, db_session, test_client, data=None, json_data=None, existing=False, update=False,
+               missing_arguments=False):
         if json_data is None:
             json_data = {}
         if existing:
@@ -42,23 +44,32 @@ class GenericTests:
             response = test_client.put(f'/{self.endpoint}/', json=object_json)
         else:
             response = test_client.post(f'/{self.endpoint}/', json=object_json)
-        print(response)
-        created_object = db_session.query(self.model).filter(self.filter_by == object_json[self.filter_by_key]).first()
-        only_one_created = db_session.query(self.model).filter(
-            self.filter_by == object_json[self.filter_by_key]).count() == 1
-        if existing:
-            assert conflict(response)
-        else:
-            assert success(response) if update else created(response)
-        assert created_object
-        assert only_one_created
 
-    def delete(self, db_session, test_client, id, has_fk=False):
+        if existing:
+            only_one_row = db_session.query(self.model).filter(
+                self.filter_by == object_json[self.filter_by_key]).count() == 1
+            assert conflict(response)
+            assert only_one_row
+        elif missing_arguments:
+            assert bad_request(response)
+        else:
+            created_object = db_session.query(self.model).filter(
+                self.filter_by == object_json[self.filter_by_key]).first()
+            only_one_created = db_session.query(self.model).filter(
+                self.filter_by == object_json[self.filter_by_key]).count() == 1
+            assert success(response) if update else created(response)
+            assert created_object
+            assert only_one_created
+
+    def delete(self, db_session, test_client, id, has_fk=False, found=True):
         response = test_client.delete(f'/{self.endpoint}/{id}')
         db_data = db_session.query(self.model).get(id)
-        if has_fk:
-            assert conflict(response)
-            assert db_data
+        if not found:
+            assert not_found(response)
         else:
-            assert success(response)
-            assert not db_data
+            if has_fk:
+                assert conflict(response)
+                assert db_data
+            else:
+                assert success(response)
+                assert not db_data

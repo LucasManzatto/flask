@@ -1,16 +1,18 @@
-from backend.src.main import db
 from flask_restplus import abort
-from main.model.author import Author
-from main.model.books import Book, BookSchema
-from main.model.series import Series
-from main.util.utils import response_success, response_conflict, response_created, response_bad_request
 from marshmallow import ValidationError
+
+from backend.src.main import db
+from backend.src.main.model.author import Author
+from backend.src.main.model.books import Book, BookSchema
+from backend.src.main.model.series import Series
+from backend.src.main.util.utils import response_success, response_conflict, response_created, response_bad_request
 
 
 def upsert_book(data, update):
     try:
         new_book = BookSchema().load(data)
     except ValidationError as err:
+        print(err.messages)
         return response_bad_request(err.messages)
 
     book = Book.query.filter_by(title=data['title']).first()

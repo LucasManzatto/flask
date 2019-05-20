@@ -1,5 +1,6 @@
+from marshmallow import Schema, fields, post_load
+
 from backend.src.main import db
-from marshmallow import Schema, fields, post_load, INCLUDE
 
 author_series = db.Table('author_series', db.Model.metadata,
                          db.Column('author_id', db.Integer, db.ForeignKey('author.id')),
@@ -26,7 +27,7 @@ class Author(db.Model):
 
 
 class AuthorSchema(Schema):
-    id = fields.Number()
+    id = fields.Number(allow_none=True)
     name = fields.String(required=True)
 
     @post_load

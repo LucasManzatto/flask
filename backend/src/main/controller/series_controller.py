@@ -1,6 +1,7 @@
 from flask import request
 from flask_restplus import Resource
-from main.service.series_service import get_all_series, upsert_series, get_a_series, delete_series
+
+from backend.src.main.service.series_service import get_all_series, upsert_series, get_a_series, delete_series
 from ..util.dto import SeriesDTO
 
 api = SeriesDTO.api

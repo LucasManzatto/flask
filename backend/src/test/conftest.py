@@ -1,11 +1,10 @@
-import os
-
 import pytest
-from main import create_app, db
-from main.model.author import Author
-from main.model.books import Book
-from main.model.series import Series
-from src import blueprint
+from backend.src.main import create_app, db
+from backend.src.main.model.author import Author
+from backend.src.main.model.books import Book
+from backend.src.main.model.series import Series
+
+from backend.src import blueprint
 
 
 @pytest.fixture(scope='session')
@@ -24,6 +23,8 @@ def test_client():
 
 @pytest.fixture(scope='function', autouse=True)
 def init_database(test_client):
+    # for table in reversed(db.metadata.sorted_tables):
+    #     db.session.execute(table.delete())
     authors = db.session.query(Author).all()
     series = db.session.query(Series).all()
     for author in authors:
@@ -45,7 +46,7 @@ def init_database(test_client):
     book = Book(title="Test Book", description='Teste', author_id=author_with_book.id)
     book2 = Book(title="Test Book 2", description='Teste')
 
-    db.session.bulk_save_objects([series, author_with_book, author, book, book2])
+    db.session.bulk_save_objects([series, author_with_book, author, book])
     db.session.commit()
 
     author_with_series_and_books.series.append(series_with_author)
