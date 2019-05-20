@@ -2,6 +2,11 @@ from marshmallow import post_load, Schema, fields
 
 from backend.src.main import db
 
+book_genres = db.Table('book_genres', db.Model.metadata,
+                       db.Column('book_id', db.Integer, db.ForeignKey('book.id')),
+                       db.Column('genre_id', db.Integer, db.ForeignKey('genre.id'))
+                       )
+
 
 class Book(db.Model):
     __tablename__ = 'book'
@@ -13,13 +18,17 @@ class Book(db.Model):
     series_id = db.Column(db.Integer, db.ForeignKey('series.id', name='fk_book_series'),
                           nullable=True)
     series = db.relationship("Series", back_populates='books')
+    genres = db.relationship("Genre", back_populates='books', secondary=book_genres)
 
-    def __init__(self, title, description, series_id=None, author_id=None, id=None):
+    def __init__(self, title, description, series_id=None, author_id=None, id=None, genres=None):
+        if genres is None:
+            genres = []
         self.title = title
         self.description = description
         self.author_id = author_id
         self.series_id = series_id
         self.id = id
+        self.genres = genres
 
     def __repr__(self):
         return f"Book: ID:{self.id} ,Title:{self.title} , Author ID:{self.author_id}"

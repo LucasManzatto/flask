@@ -1,30 +1,25 @@
 from flask_restplus import abort
-
-SUCCESS = 200
-CREATED = 201
-BAD_REQUEST = 400
-NOT_FOUND = 404
-CONFLICT = 409
+from flask_restplus._http import HTTPStatus
 
 
 def not_found(response):
-    return response.status_code == NOT_FOUND
+    return response.status_code == HTTPStatus.NOT_FOUND
 
 
 def success(response):
-    return response.status_code == SUCCESS
+    return response.status_code == HTTPStatus.OK
 
 
 def bad_request(response):
-    return response.status_code == BAD_REQUEST
+    return response.status_code == HTTPStatus.BAD_REQUEST
 
 
 def conflict(response):
-    return response.status_code == CONFLICT
+    return response.status_code == HTTPStatus.CONFLICT
 
 
 def created(response):
-    return response.status_code == CREATED
+    return response.status_code == HTTPStatus.CREATED
 
 
 def message(response, msg):
@@ -36,7 +31,7 @@ def response_created(msg):
         'status': 'created',
         'message': msg
     }
-    return response_object, 201
+    return response_object, HTTPStatus.CREATED
 
 
 def response_success(msg):
@@ -44,7 +39,7 @@ def response_success(msg):
         'status': 'success',
         'message': msg
     }
-    return response_object, 200
+    return response_object, HTTPStatus.OK
 
 
 def response_conflict(msg):
@@ -52,8 +47,8 @@ def response_conflict(msg):
         'status': 'confict',
         'message': msg,
     }
-    return response_object, 409
+    return response_object, HTTPStatus.CONFLICT
 
 
 def response_bad_request(msg):
-    return abort(400, msg)
+    return abort(HTTPStatus.BAD_REQUEST, msg)

@@ -5,6 +5,7 @@ from backend.src.main.model.books import Book
 from backend.src.main.model.series import Series
 
 from backend.src import blueprint
+from main.model.genre import Genre
 
 
 @pytest.fixture(scope='session')
@@ -27,13 +28,17 @@ def init_database(test_client):
     #     db.session.execute(table.delete())
     authors = db.session.query(Author).all()
     series = db.session.query(Series).all()
+    genres = db.session.query(Genre).all()
     for author in authors:
         author.series = []
     for serie in series:
         serie.books = []
+    for genre in genres:
+        genre.books = []
     db.session.query(Series).delete()
     db.session.query(Book).delete()
     db.session.query(Author).delete()
+    db.session.query(Genre).delete()
 
     author = Author(id=1, name='Test')
     author_with_book = Author(id=2, name='Test With Book')
@@ -43,10 +48,12 @@ def init_database(test_client):
     series = Series(id=1, title='Test 1', description='Test')
     series_with_author = Series(id=2, title='Test 2', description='Test')
 
-    book = Book(title="Test Book", description='Teste', author_id=author_with_book.id)
-    book2 = Book(title="Test Book 2", description='Teste')
+    book = Book(title="Test", description='Teste', author_id=author_with_book.id)
+    book2 = Book(title="Test 2", description='Teste')
 
-    db.session.bulk_save_objects([series, author_with_book, author, book])
+    genre = Genre(name='Test')
+
+    db.session.bulk_save_objects([series, author_with_book, author, book, genre])
     db.session.commit()
 
     author_with_series_and_books.series.append(series_with_author)

@@ -2,7 +2,7 @@ from flask import request
 from flask_restplus import Resource
 
 from backend.src.main.service.author_service import get_all_authors, upsert_author, get_an_author, delete_author
-from ..util.dto import AuthorDTO
+from backend.src.main.util.dto import AuthorDTO
 
 api = AuthorDTO.api
 author_list = AuthorDTO.author_list
@@ -30,12 +30,12 @@ class AuthorCollection(Resource):
         return upsert_author(request.json, update=True)
 
 
-@api.route('/<int:author_id>')
+@api.route('/<int:id>')
 class BookItem(Resource):
     @api.marshal_with(author_list)
-    def get(self, author_id):
+    def get(self, id):
         """Find a author by the ID."""
-        return get_an_author(author_id)
+        return get_an_author(id)
 
     @staticmethod
     def delete(author_id):

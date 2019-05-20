@@ -30,15 +30,27 @@ def test_insert_book(test_client, db_session):
     generic_tests.insert(db_session=db_session, test_client=test_client, data=book)
 
 
+def test_insert_book_with_id(test_client, db_session):
+    book = Book(id=1, title='Test Insert', description='Teste', author_id=1)
+    generic_tests.insert(db_session=db_session, test_client=test_client, data=book)
+
+
+def test_insert_book_with_genres(test_client, db_session):
+    book_json = {
+        'title': 'Test Insert',
+        'description': 'test',
+        'author_id': 1,
+        'genre_ids': [1]
+    }
+    generic_tests.insert(db_session=db_session, test_client=test_client, json_data=book_json)
+
+
 def test_insert_book_duplicated(test_client, db_session):
     generic_tests.insert(db_session=db_session, test_client=test_client, existing=True)
 
 
 def test_insert_book_missing_arguments(test_client, db_session):
-    book_json = {
-        'description': 'Teste'
-    }
-    generic_tests.insert(db_session=db_session, test_client=test_client, json_data=book_json, missing_arguments=True)
+    generic_tests.insert(db_session=db_session, test_client=test_client, json_data={}, missing_arguments=True)
 
 
 def test_update_book(db_session, test_client):

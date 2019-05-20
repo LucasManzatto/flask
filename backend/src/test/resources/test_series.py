@@ -1,78 +1,47 @@
-# from main.model.books import Book
-# from main.model.series import Series, SeriesSchema
-# from main.util.utils import not_found, bad_request, message, conflict, \
-#     success, created
-
-
+# from backend.src.main.model.series import Series, SeriesSchema
+# from test.resources.generics import GenericTests
+#
+# endpoint = 'series'
+# model = Series
+# model_schema = SeriesSchema()
+# filter_by = Series.title
+# filter_by_key = 'title'
+#
+# generic_tests = GenericTests(endpoint=endpoint, model=model, model_schema=model_schema, filter_by=filter_by,
+#                              filter_by_key=filter_by_key)
+#
+#
+# def test_get_one_series(test_client, db_session):
+#     generic_tests.get_one(test_client, db_session)
+#
+#
 # def test_get_all_series(test_client, db_session):
-#     db_series_size = db_session.query(Series).count()
-#     response = test_client.get('/series/')
-#     series_size = len(response.json['series'])
-#     assert success(response)
-#     assert db_series_size == series_size
+#     generic_tests.get_all(test_client, db_session)
 #
 #
-# def test_get_a_series(test_client, db_session):
-#     db_series = db_session.query(Series).first()
-#     response = test_client.get(f'/series/{db_series.id}')
-#     series = response.json
-#     assert success(response)
-#     assert db_series.id == series['id']
+# def test_get_series_not_found(test_client):
+#     generic_tests.get_not_found(test_client)
 #
 #
-# def test_create_series(test_client, db_session):
-#     series_json = {
-#         'title': 'Test Insert',
-#         'description': 'Test',
-#     }
-#     response = test_client.post('/series/', json=series_json)
-#     series = db_session.query(Series).filter_by(title=series_json['title']).first()
-#     assert created(response)
-#     assert message(response, 'Series created successfully.')
-#     assert series
+# def test_insert_series(test_client, db_session):
+#     series = Series(title='Test Insert', description='Test')
+#     generic_tests.insert(db_session, test_client, data=series)
 #
 #
-# def test_create_series_missing_arguments(test_client, db_session):
-#     series_json = {
-#         'description': 'Test',
-#     }
-#     response = test_client.post('/series/', json=series_json)
-#     assert bad_request(response)
+# def test_insert_series_duplicated(test_client, db_session):
+#     generic_tests.insert(db_session, test_client, existing=True)
 #
 #
-# def test_create_duplicated_series(test_client, db_session):
-#     series = db_session.query(Series).first()
-#     series_json = SeriesSchema().dump(series)
-#
-#     response = test_client.post('/series/', json=series_json)
-#     series_size = db_session.query(Series).filter_by(title=series.title).count()
-#     assert conflict(response)
-#     assert series_size == 1
+# def test_series_missing_arguments(test_client, db_session):
+#     generic_tests.insert(db_session, test_client, missing_arguments=True, json_data={})
 #
 #
-# def test_create_series_with_books(test_client, db_session):
+# def test_insert_series_with_books(test_client, db_session):
 #     series_json = {
 #         'title': 'Test Insert',
 #         'books_ids': [1]
 #     }
-#     response = test_client.post('/series/', json=series_json)
-#     series = db_session.query(Series).filter_by(title=series_json['title']).first()
-#     assert created(response)
-#     assert series
-#     assert len(series.books) == len(series_json['books_ids'])
-#
-#
-# def test_create_series_with_invalid_books(test_client, db_session):
-#     series_json = {
-#         'title': 'Test Insert 3',
-#         'description': 'Test',
-#         'books_ids': [-1]
-#     }
-#     response = test_client.post('/series/', json=series_json)
-#     series = db_session.query(Series).filter_by(title='Test Insert 3').first()
-#     assert created(response)
-#     assert series
-#     assert not series.books
+#     generic_tests.insert(db_session, test_client, json_data=series_json)
 #
 #
 # def test_update_series(test_client, db_session):
@@ -81,7 +50,8 @@
 #         'title': 'Test Update',
 #         'books_ids': [1]
 #     }
-#     response = test_client.put('/series/', json=series_json)
-#     series = db_session.query(Series).filter_by(id=series_json['id']).first()
-#     assert success(response)
-#     assert series.title == series_json['title']
+#     generic_tests.insert(db_session, test_client, json_data=series_json, update=True)
+#
+#
+# def test_delete_series(test_client, db_session):
+#     generic_tests.delete(db_session=db_session, test_client=test_client, id=1)

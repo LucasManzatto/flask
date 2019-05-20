@@ -26,7 +26,7 @@ class AuthorDTO:
         'series_ids': fields.List(fields.Integer(required=False, description="The author's series."))
     })
 
-    author_update = api.clone('Author_Clone', author_create, {
+    author_update = api.clone('Author_Update', author_create, {
         'id': fields.Integer(description='The ID of the book.'),
     })
 
@@ -50,6 +50,12 @@ class BookDTO:
         'id': fields.Integer(description='The ID of the author.'),
         'name': fields.String(description='The name of the author.'),
     })
+
+    book_genre = api.model('Book_Genre', {
+        'id': fields.Integer(description='The ID of the genre.'),
+        'name': fields.String(description='The name of the genre.'),
+    })
+
     book_series = api.model('Book_Series', {
         'id': fields.Integer(description='The ID of the series.'),
         'title': fields.String(description='The name of the series.'),
@@ -57,6 +63,7 @@ class BookDTO:
     })
 
     book_create = api.clone('Book_Update', book_base, {
+        'genre_ids': fields.List(fields.Integer(required=False)),
         'author_id': fields.Integer(required=False, description="The book's author."),
         'series_id': fields.Integer(required=False, description="The book's series.")
     })
@@ -68,7 +75,34 @@ class BookDTO:
     book_list = api.clone('Book_List', book_base, {
         'id': fields.Integer(description='The ID of the book.'),
         'author': fields.Nested(book_author),
-        'series': fields.Nested(book_series)
+        'series': fields.Nested(book_series),
+        'genres': fields.Nested(book_genre)
+    })
+
+
+class GenreDTO:
+    api = api.namespace('genres', description='Operations related to genres.')
+
+    genre_base = api.model('Genre_Base', {
+        'name': fields.String(required=True, description='The name of the genre.'),
+    })
+
+    genre_books = api.model('Genre_Books', {
+        'id': fields.Integer(description='The ID of the book.'),
+        'title': fields.String(description='The title of the book.'),
+    })
+
+    genre_create = api.clone('Genre_Update', genre_base, {
+        'books_ids': fields.List(fields.Integer(required=False, description="The genre books.")),
+    })
+
+    genre_update = api.clone('Genre_Create', genre_create, {
+        'id': fields.Integer(description='The ID of the genre.'),
+    })
+
+    genre_list = api.clone('Genre_List', genre_base, {
+        'id': fields.Integer(description='The ID of the genre.'),
+        'books': fields.Nested(genre_books)
     })
 
 

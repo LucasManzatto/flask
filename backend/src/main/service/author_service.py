@@ -9,8 +9,7 @@ from backend.src.main.util.utils import response_created, response_conflict, res
 def upsert_author(data, update):
     series = get_series(data)
     try:
-        if not update:
-            data.pop('id', None)
+        data.pop('id', None)
         author = AuthorSchema(unknown=INCLUDE).load(data)
     except ValidationError as err:
         print(err.messages)
@@ -31,7 +30,6 @@ def get_series(data):
 
 
 def create_new_author(new_author, series):
-    print(new_author)
     del new_author.id
     new_author.series = series
     save_changes(new_author)

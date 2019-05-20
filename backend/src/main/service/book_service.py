@@ -1,4 +1,5 @@
 from flask_restplus import abort
+from main.model.genre import Genre
 from marshmallow import ValidationError
 
 from backend.src.main import db
@@ -9,6 +10,7 @@ from backend.src.main.util.utils import response_success, response_conflict, res
 
 
 def upsert_book(data, update):
+    genres = get_genres(data)
     try:
         new_book = BookSchema().load(data)
     except ValidationError as err:
@@ -21,7 +23,7 @@ def upsert_book(data, update):
         series = Series.query.filter(Series.id == new_book.series_id).first()
         if author:
             if series or not new_book.series_id:
-                return update_existing_book(data) if update else create_new_book(new_book)
+                return update_existing_book(data, genres) if update else create_new_book(new_book, genres)
             elif new_book.series_id:
                 return response_bad_request("Series doesn't exist.")
         else:
@@ -30,7 +32,14 @@ def upsert_book(data, update):
         return response_conflict('Book already exists. Please choose another title.')
 
 
-def update_existing_book(data):
+def get_genres(data):
+    genre_ids = data.pop('genre_ids', [])
+    return Genre.query.filter(Genre.id.in_(genre_ids)).all()
+
+
+def update_existing_book(data, genres):
+    book = Book.query.get(data['id'])
+    book.genres = genres
     Book.query.filter_by(id=data['id']).update(data)
     db.session.commit()
     return response_success("Book successfully updated.")
@@ -58,7 +67,9 @@ def delete_book(book_id):
     return response_success('Book successfully deleted.')
 
 
-def create_new_book(data):
+def create_new_book(data, genres):
+    del data.id
+    data.genres = genres
     db.session.add(data)
     db.session.commit()
     return response_created('Book successfully created.')

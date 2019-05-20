@@ -1,7 +1,6 @@
 from marshmallow import post_load, Schema, fields
 
 from backend.src.main import db
-from backend.src.main.model.author import author_series
 
 
 class Series(db.Model):
@@ -10,7 +9,7 @@ class Series(db.Model):
     title = db.Column(db.String(30))
     description = db.Column(db.String(30))
     books = db.relationship("Book", back_populates='series')
-    authors = db.relationship("Author", back_populates='series', secondary=author_series)
+    authors = db.relationship("Author", back_populates='series', secondary='author_series')
 
     def __init__(self, title, description=None, id=None, authors=None):
         if authors is None:

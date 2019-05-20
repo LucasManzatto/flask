@@ -13,7 +13,9 @@ class GenericTests:
 
     def get_one(self, test_client, db_session):
         object_from_db = db_session.query(self.model).first()
+        print(object_from_db)
         response = test_client.get(f'/{self.endpoint}/{object_from_db.id}')
+
         assert success(response)
         assert response.json['id'] == object_from_db.id
 
