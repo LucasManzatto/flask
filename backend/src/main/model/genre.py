@@ -1,3 +1,5 @@
+from backend.src.main.model.books import BookFactory
+import factory
 from marshmallow import Schema, fields, post_load
 
 from backend.src.main import db
@@ -18,6 +20,26 @@ class Genre(db.Model):
 
     def __repr__(self):
         return f"Genre-ID:{self.id},Name:{self.name}"
+
+
+class GenreFactory(factory.alchemy.SQLAlchemyModelFactory):
+    class Meta:
+        model = Genre
+        sqlalchemy_session = db.session
+        sqlalchemy_session_persistence = 'commit'
+
+    id = factory.Sequence(lambda n: n)
+    name = factory.Sequence(lambda n: u'Genre %d' % n)
+
+    @factory.post_generation
+    def books(self, create, extracted, **kwargs):
+        if not create:
+            return
+        if extracted:
+            assert isinstance(extracted, int)
+            for book in range(extracted):
+                book = BookFactory()
+                self.books.append(book)
 
 
 class GenreSchema(Schema):

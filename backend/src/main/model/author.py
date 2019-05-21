@@ -37,13 +37,12 @@ class AuthorFactory(factory.alchemy.SQLAlchemyModelFactory):
     name = factory.Sequence(lambda n: u'Author %d' % n)
 
     @factory.post_generation
-    def books(obj, create, extracted, **kwargs):
+    def books(self, create, extracted, **kwargs):
         if not create:
             return
-
         if extracted:
             assert isinstance(extracted, int)
-            BookFactory.create_batch(size=extracted, author=obj, **kwargs)
+            BookFactory.create_batch(size=extracted, author=self, **kwargs)
 
 
 class AuthorSchema(Schema):

@@ -45,9 +45,6 @@ class BookFactory(factory.alchemy.SQLAlchemyModelFactory):
     id = factory.Sequence(lambda n: n)
     title = factory.Sequence(lambda n: u'Book %d' % n)
     description = factory.Sequence(lambda n: u'Description %d' % n)
-
-
-class BookWithAuthorFactory(BookFactory):
     author = factory.SubFactory('backend.src.main.model.author.AuthorFactory')
 
 
