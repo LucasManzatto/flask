@@ -46,7 +46,7 @@ class BookItem(Resource):
         return delete_author(id)
 
 
-@api.route('/<int:id>/books/')
+@api.route('/<int:id>/books')
 class BookCollection(Resource):
     @api.marshal_with(author_books)
     def get(self, id):
@@ -54,7 +54,7 @@ class BookCollection(Resource):
         return get_author_books(id)
 
 
-@api.route('/<int:id>/series/')
+@api.route('/<int:id>/series')
 class BookCollection(Resource):
     @api.marshal_with(author_series)
     def get(self, id):

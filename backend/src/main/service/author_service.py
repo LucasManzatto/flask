@@ -5,6 +5,7 @@ from backend.src.main import db
 from backend.src.main.model.author import Author, AuthorSchema, author_series
 from backend.src.main.model.series import Series
 from backend.src.main.util.utils import response_created, response_conflict, response_success, response_bad_request
+from sqlalchemy.orm import joinedload
 
 
 def upsert_author(data, update):
@@ -66,12 +67,12 @@ def delete_author(author_id):
 
 
 def get_author_books(id):
-    return Book.query.filter(Author.id == id).all()
+    books = Author.query.get(id).books
+    return books
 
 
 def get_author_series(id):
-    return Series.query.filter(Series.authors.any(id=id)).all()
-    # return Series.query.join(author_series).filter(Author.id == id).all()
+    return Author.query.get(id).series
 
 
 def has_no_dependencies(author):

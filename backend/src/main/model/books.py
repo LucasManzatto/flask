@@ -1,3 +1,4 @@
+import factory
 from marshmallow import post_load, Schema, fields
 
 from backend.src.main import db
@@ -20,7 +21,7 @@ class Book(db.Model):
     series = db.relationship("Series", back_populates='books')
     genres = db.relationship("Genre", back_populates='books', secondary=book_genres)
 
-    def __init__(self, title, description, series_id=None, author_id=None, id=None, genres=None):
+    def __init__(self, title, description, series_id=None, author_id=None, id=None, genres=None, author=None):
         if genres is None:
             genres = []
         self.title = title
@@ -29,9 +30,25 @@ class Book(db.Model):
         self.series_id = series_id
         self.id = id
         self.genres = genres
+        self.author = author
 
     def __repr__(self):
         return f"Book: ID:{self.id} ,Title:{self.title} , Author ID:{self.author_id}"
+
+
+class BookFactory(factory.alchemy.SQLAlchemyModelFactory):
+    class Meta:
+        model = Book
+        sqlalchemy_session = db.session
+        sqlalchemy_session_persistence = 'commit'
+
+    id = factory.Sequence(lambda n: n)
+    title = factory.Sequence(lambda n: u'Book %d' % n)
+    description = factory.Sequence(lambda n: u'Description %d' % n)
+
+
+class BookWithAuthorFactory(BookFactory):
+    author = factory.SubFactory('backend.src.main.model.author.AuthorFactory')
 
 
 class BookSchema(Schema):

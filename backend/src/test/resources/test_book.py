@@ -1,7 +1,7 @@
 from backend.src.main.model.books import Book, BookSchema
 
-from backend.src.main.util.utils import not_found, success
 from backend.src.test.resources.generics import GenericTests
+from sqlalchemy.orm import joinedload
 
 endpoint = 'books'
 model = Book
@@ -11,6 +11,10 @@ filter_by_key = 'title'
 
 generic_tests = GenericTests(endpoint=endpoint, model=model, model_schema=model_schema, filter_by=filter_by,
                              filter_by_key=filter_by_key)
+
+
+def test_fail():
+    assert True
 
 
 def test_get_one_book(test_client, db_session):
@@ -26,11 +30,23 @@ def test_get_book_not_found(test_client):
 
 
 def test_get_book_author(db_session, test_client):
-    generic_tests.get_relationship_data(db_session=db_session, test_client=test_client, relationship='author')
+    relationship = 'author'
+    book = db_session.query(Book).options(joinedload(relationship)).first()
+    generic_tests.get_relationship_data(db_session=db_session, test_client=test_client, relationship=relationship,
+                                        object_from_db=book)
+
+
+def test_get_book_series(db_session, test_client):
+    relationship = 'series'
+    book = db_session.query(Book).options(joinedload(relationship)).first()
+    generic_tests.get_relationship_data(db_session=db_session, test_client=test_client, relationship=relationship,
+                                        object_from_db=book)
 
 
 def test_get_book_genres(db_session, test_client):
-    generic_tests.get_relationship_data(db_session=db_session, test_client=test_client, relationship='genres')
+    book = db_session.query(Book).options(joinedload('genres')).first()
+    generic_tests.get_relationship_data(db_session=db_session, test_client=test_client, relationship='genres',
+                                        object_from_db=book)
 
 
 def test_insert_book(test_client, db_session):

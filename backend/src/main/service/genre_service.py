@@ -55,6 +55,7 @@ def get_a_genre(genre_id):
 def delete_genre(genre_id):
     genre = Genre.query.get(genre_id)
     if genre:
+        genre.books = []
         Genre.query.filter_by(id=genre_id).delete()
         db.session.commit()
         return response_success('')
@@ -63,7 +64,8 @@ def delete_genre(genre_id):
 
 
 def get_genre_books(genre_id):
-    return Genre.query.get(genre_id).books
+    books = Genre.query.get(genre_id).books
+    return books
 
 
 def save_changes(data):

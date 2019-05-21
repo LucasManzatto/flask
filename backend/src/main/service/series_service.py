@@ -52,6 +52,16 @@ def get_a_series(series_id):
     return Series.query.get_or_404(series_id)
 
 
+def get_series_books(series_id):
+    books = Series.query.get(series_id).books
+    return books
+
+
+def get_series_authors(series_id):
+    authors = Series.query.get(series_id).authors
+    return authors
+
+
 def delete_series(series_id):
     Book.query.filter(Book.series_id == series_id).update({Book.series_id: None},
                                                           synchronize_session='fetch')

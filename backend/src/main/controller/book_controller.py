@@ -1,7 +1,8 @@
 from flask import request
 from flask_restplus import Resource
 
-from ..service.book_service import upsert_book, get_all_books, get_a_book, delete_book, get_book_author, get_book_genres
+from ..service.book_service import upsert_book, get_all_books, get_a_book, delete_book, get_book_author, \
+    get_book_genres, get_book_series
 from ..util.dto import BookDTO
 
 api = BookDTO.api
@@ -45,7 +46,7 @@ class BookItem(Resource):
         return delete_book(id)
 
 
-@api.route('/<int:id>/author/')
+@api.route('/<int:id>/author')
 class BookAuthorItem(Resource):
     @api.marshal_with(book_author)
     def get(self, id):
@@ -53,9 +54,17 @@ class BookAuthorItem(Resource):
         return get_book_author(id)
 
 
-@api.route('/<int:id>/genres/')
+@api.route('/<int:id>/genres')
 class BookGenreCollection(Resource):
     @api.marshal_with(book_genres)
     def get(self, id):
         """Find the book genres."""
         return get_book_genres(id)
+
+
+@api.route('/<int:id>/series')
+class BookSeriesItem(Resource):
+    @api.marshal_with(BookDTO.book_series)
+    def get(self, id):
+        """Find the book series."""
+        return get_book_series(id)

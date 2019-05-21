@@ -1,7 +1,8 @@
 from flask import request
 from flask_restplus import Resource
 
-from backend.src.main.service.series_service import get_all_series, upsert_series, get_a_series, delete_series
+from backend.src.main.service.series_service import get_all_series, upsert_series, get_a_series, delete_series, \
+    get_series_books, get_series_authors
 from ..util.dto import SeriesDTO
 
 api = SeriesDTO.api
@@ -42,3 +43,19 @@ class SeriesItem(Resource):
     def delete(self, id):
         """Deletes a series."""
         return delete_series(id)
+
+
+@api.route('/<int:id>/books')
+class SeriesBookCollection(Resource):
+    @api.marshal_with(SeriesDTO.series_books)
+    def get(self, id):
+        """Find the series books."""
+        return get_series_books(id)
+
+
+@api.route('/<int:id>/authors')
+class SeriesAuthorCollection(Resource):
+    @api.marshal_with(SeriesDTO.series_authors)
+    def get(self, id):
+        """Find the series authors."""
+        return get_series_authors(id)

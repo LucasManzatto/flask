@@ -46,8 +46,8 @@ class BookItem(Resource):
         return delete_genre(id)
 
 
-@api.route('/author/<int:id>')
-class BookAuthorItem(Resource):
+@api.route('/<int:id>/books')
+class GenreBookCollection(Resource):
     @api.marshal_with(genre_books_list)
     def get(self, id):
         """Find the genre books."""

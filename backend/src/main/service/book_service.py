@@ -65,6 +65,11 @@ def get_book_genres(book_id):
     return Genre.query.join(Genre.books).filter(Book.id == book_id).all()
 
 
+def get_book_series(book_id):
+    series = Book.query.get(book_id).series
+    return series
+
+
 def delete_book(book_id):
     Book.query.filter_by(id=book_id).delete(synchronize_session=False)
     db.session.commit()
