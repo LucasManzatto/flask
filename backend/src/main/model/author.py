@@ -1,4 +1,5 @@
 from backend.src.main.model.books import BookFactory
+from backend.src.main.model.series import SeriesFactory
 from marshmallow import Schema, fields, post_load
 import factory
 from backend.src.main import db
@@ -43,6 +44,16 @@ class AuthorFactory(factory.alchemy.SQLAlchemyModelFactory):
         if extracted:
             assert isinstance(extracted, int)
             BookFactory.create_batch(size=extracted, author=self, **kwargs)
+
+    @factory.post_generation
+    def series(self, create, extracted, **kwargs):
+        if not create:
+            return
+        if extracted:
+            assert isinstance(extracted, int)
+            for series in range(extracted):
+                series = SeriesFactory()
+                self.series.append(series)
 
 
 class AuthorSchema(Schema):

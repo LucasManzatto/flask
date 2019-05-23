@@ -1,3 +1,4 @@
+from backend.src.main.model.author import Author
 from marshmallow import ValidationError
 
 from backend.src.main.util.utils import success, created, conflict, not_found, bad_request
@@ -19,7 +20,8 @@ class GenericTests:
         assert success(response)
         assert response.json['id'] == object_from_db.id
 
-    def get_relationship_data(self, test_client, db_session, relationship, object_from_db):
+    def get_relationship_data(self, test_client, db_session, relationship):
+        object_from_db = db_session.query(self.model).options(joinedload(relationship)).first()
         relationship_db_objects = object_from_db.__dict__[relationship]
         response = test_client.get(f'/{self.endpoint}/{object_from_db.id}/{relationship}')
         relationship_objects = response.json
@@ -75,7 +77,8 @@ class GenericTests:
 
     def delete(self, db_session, test_client, id, has_fk=False, found=True):
         response = test_client.delete(f'/{self.endpoint}/{id}')
-        db_data = db_session.query(self.model).get(id)
+        db_session.commit()
+        db_data = self.model.query.get(id)
         if not found:
             assert not_found(response)
         else:

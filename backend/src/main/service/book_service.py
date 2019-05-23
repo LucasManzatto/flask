@@ -1,4 +1,5 @@
 from flask_restplus import abort
+from flask_restplus._http import HTTPStatus
 from main.model.genre import Genre
 from marshmallow import ValidationError
 
@@ -13,6 +14,7 @@ def upsert_book(data, update):
     genres = get_genres(data)
     try:
         new_book = BookSchema().load(data)
+        del new_book.author
     except ValidationError as err:
         print(err.messages)
         return response_bad_request(err.messages)
@@ -55,10 +57,9 @@ def get_a_book(book_id):
 
 def get_book_author(book_id):
     book = Book.query.get(book_id)
-    if book:
-        return book.author if book.author_id else abort(400, 'Book has no author.')
-    else:
-        abort(400, 'Book not found.')
+    if not book:
+        abort(HTTPStatus.NOT_FOUND, 'Book not found.')
+    return book.author
 
 
 def get_book_genres(book_id):
