@@ -44,6 +44,8 @@ class BookDTO:
     book_base = api.model('Book_Base', {
         'title': fields.String(required=True, description='The title of the book.'),
         'description': fields.String(required=True, description='The description of the book.'),
+        'start_date': fields.DateTime(description='The start date of the reading.'),
+        'end_date': fields.DateTime(description='The end date of the reading.')
     })
 
     book_author = api.model('Book_Author', {

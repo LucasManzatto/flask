@@ -8,6 +8,7 @@ from backend.src.main import create_app, db
 
 
 app = create_app(os.getenv('BOILERPLATE_ENV') or 'dev')
+# app = create_app('test')
 app.register_blueprint(blueprint, url_prefix='/api/v1')
 app.app_context().push()
 manager = Manager(app)

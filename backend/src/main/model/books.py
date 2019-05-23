@@ -1,4 +1,7 @@
+from datetime import datetime
+
 import factory
+from factory.fuzzy import FuzzyDate
 from marshmallow import post_load, Schema, fields
 
 from backend.src.main import db
@@ -20,9 +23,11 @@ class Book(db.Model):
                           nullable=True)
     series = db.relationship("Series", back_populates='books')
     genres = db.relationship("Genre", back_populates='books', secondary=book_genres)
+    start_date = db.Column(db.Date())
+    end_date = db.Column(db.Date())
 
     def __init__(self, title, description, author=None, series_id=None, author_id=None, id=None, genres=None,
-                 series=None
+                 series=None, start_date=None, end_date=None
                  ):
         if genres is None:
             genres = []
@@ -34,6 +39,8 @@ class Book(db.Model):
         self.genres = genres
         self.series = series
         self.author = author
+        self.start_date = start_date
+        self.end_date = end_date
 
 
 def __repr__(self):
@@ -50,6 +57,8 @@ class BookFactory(factory.alchemy.SQLAlchemyModelFactory):
     title = factory.Sequence(lambda n: u'Book %d' % n)
     description = factory.Sequence(lambda n: u'Description %d' % n)
     author = factory.SubFactory('backend.src.main.model.author.AuthorFactory')
+    start_date = FuzzyDate(datetime.now(), datetime(2020, 1, 1))
+    end_date = FuzzyDate(datetime(2020, 1, 2), datetime(2022, 1, 1))
 
 
 class BookWithSeriesFactory(BookFactory):
@@ -60,9 +69,11 @@ class BookWithSeriesFactory(BookFactory):
 class BookSchema(Schema):
     id = fields.Integer(allow_none=True)
     title = fields.String(required=True)
-    description = fields.String(allow_none=True)
     author_id = fields.Number(required=True)
+    description = fields.String(allow_none=True)
     series_id = fields.Number(allow_none=True)
+    start_date = fields.Date(allow_none=True)
+    end_date = fields.Date(allow_none=True)
 
     @post_load
     def make_book(self, data):
