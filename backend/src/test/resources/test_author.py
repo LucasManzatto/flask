@@ -1,10 +1,8 @@
 from backend.src.main.model.author import Author, AuthorSchema, author_series
 from backend.src.test.resources.generics import GenericTests
-from backend.src.main.model.series import Series
 from backend.src.main.model.books import Book
 from faker import Faker
 from sqlalchemy import and_
-from sqlalchemy.orm import joinedload
 
 endpoint = 'authors'
 model = Author

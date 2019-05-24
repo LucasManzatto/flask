@@ -1,11 +1,9 @@
-from backend.src.main.model.books import Book
 from marshmallow import ValidationError, INCLUDE
 
 from backend.src.main import db
-from backend.src.main.model.author import Author, AuthorSchema, author_series
+from backend.src.main.model.author import Author, AuthorSchema
 from backend.src.main.model.series import Series
 from backend.src.main.util.utils import response_created, response_conflict, response_success, response_bad_request
-from sqlalchemy.orm import joinedload
 
 
 def upsert_author(data, update):

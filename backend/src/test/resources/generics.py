@@ -1,8 +1,4 @@
-from backend.src.main.model.author import Author
-from marshmallow import ValidationError
-
 from backend.src.main.util.utils import success, created, conflict, not_found, bad_request
-from sqlalchemy import inspect
 from sqlalchemy.orm import joinedload
 
 

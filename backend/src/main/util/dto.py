@@ -4,7 +4,7 @@ from backend.src.main import api
 
 
 class AuthorDTO:
-    api = api.namespace('authors', description='Operations related to authors.')
+    api = api.namespace('Authors', description='Operations related to authors.')
 
     author_base = api.model("Author_Base", {
         'name': fields.String(description='The name of the author.'),
@@ -39,7 +39,7 @@ class AuthorDTO:
 
 
 class BookDTO:
-    api = api.namespace('books', description='Operations related to books')
+    api = api.namespace('Books', description='Operations related to books')
 
     book_base = api.model('Book_Base', {
         'title': fields.String(required=True, description='The title of the book.'),
@@ -83,7 +83,7 @@ class BookDTO:
 
 
 class GenreDTO:
-    api = api.namespace('genres', description='Operations related to genres.')
+    api = api.namespace('Genres', description='Operations related to genres.')
 
     genre_base = api.model('Genre_Base', {
         'name': fields.String(required=True, description='The name of the genre.'),
@@ -109,7 +109,7 @@ class GenreDTO:
 
 
 class SeriesDTO:
-    api = api.namespace('series', description='Operations related to series.')
+    api = api.namespace('Series', description='Operations related to series.')
 
     series_base = api.model('Series_Base', {
         'title': fields.String(required=True, description='The title of the series.'),

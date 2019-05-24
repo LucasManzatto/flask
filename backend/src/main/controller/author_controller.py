@@ -6,28 +6,23 @@ from backend.src.main.service.author_service import get_all_authors, upsert_auth
 from backend.src.main.util.dto import AuthorDTO
 
 api = AuthorDTO.api
-author_list = AuthorDTO.author_list
-author_create = AuthorDTO.author_create
-author_update = AuthorDTO.author_update
-author_books = AuthorDTO.author_books
-author_series = AuthorDTO.author_series
 
 
 @api.route('/')
 @api.doc(
     responses={200: 'OK', 201: 'Created', 400: 'Invalid Argument', 404: 'Author not found.', 500: 'Mapping Key Error'})
 class AuthorCollection(Resource):
-    @api.marshal_list_with(author_list, code=201, envelope='authors')
+    @api.marshal_list_with(AuthorDTO.author_list, code=201, envelope='authors')
     def get(self):
         """List all authors."""
         return get_all_authors()
 
-    @api.expect(author_create)
+    @api.expect(AuthorDTO.author_create)
     def post(self):
         """Creates a new author."""
         return upsert_author(request.json, update=False)
 
-    @api.expect(author_update)
+    @api.expect(AuthorDTO.author_update)
     def put(self):
         """Updates an author."""
         return upsert_author(request.json, update=True)
@@ -35,7 +30,7 @@ class AuthorCollection(Resource):
 
 @api.route('/<int:id>')
 class BookItem(Resource):
-    @api.marshal_with(author_list)
+    @api.marshal_with(AuthorDTO.author_list)
     def get(self, id):
         """Find a author by the ID."""
         return get_an_author(id)
@@ -48,7 +43,7 @@ class BookItem(Resource):
 
 @api.route('/<int:id>/books')
 class BookCollection(Resource):
-    @api.marshal_with(author_books)
+    @api.marshal_list_with(AuthorDTO.author_books)
     def get(self, id):
         """Find the author books."""
         return get_author_books(id)
@@ -56,7 +51,7 @@ class BookCollection(Resource):
 
 @api.route('/<int:id>/series')
 class BookCollection(Resource):
-    @api.marshal_with(author_series)
+    @api.marshal_list_with(AuthorDTO.author_series)
     def get(self, id):
         """Find the author series."""
         return get_author_series(id)
