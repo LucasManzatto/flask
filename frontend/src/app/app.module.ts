@@ -6,7 +6,7 @@ import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {SharedModule} from './shared/shared.module';
-import {BookListComponent} from './containers/books/book-list/book-list.component';
+import { BookListComponent } from './book-list/book-list.component';
 
 @NgModule({
   declarations: [
