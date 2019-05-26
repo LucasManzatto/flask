@@ -2,7 +2,7 @@ from backend.src.main.model.series import Series, SeriesSchema
 from backend.src.main.model.books import Book
 from faker import Faker
 from sqlalchemy.orm import joinedload
-from test.resources.generics import GenericTests
+from backend.src.test.resources.generics import GenericTests
 
 endpoint = 'series'
 model = Series
