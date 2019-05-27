@@ -5,7 +5,7 @@ from backend.src.main.model.author import Author, AuthorFactory
 
 from backend.src import blueprint
 from backend.src.main.model.books import Book, BookFactory, BookWithSeriesFactory
-from main.model.genre import Genre, GenreFactory
+from backend.src.main.model.genre import Genre, GenreFactory
 
 
 @pytest.fixture(scope='session')

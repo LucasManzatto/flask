@@ -1,6 +1,6 @@
 from flask_restplus import abort
 from flask_restplus._http import HTTPStatus
-from main.model.genre import Genre
+from backend.src.main.model.genre import Genre
 from marshmallow import ValidationError
 
 from backend.src.main import db

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Book } from '../models/book.model';
-import { Author } from '../models/author.model';
 import { MatTableDataSource } from '@angular/material/table';
+import { Book } from '../../shared/models/book.model';
+import { Author } from '../../shared/models/author.model';
+import { BookService } from '../shared/book.service';
 
 @Component({
   selector: 'app-book-list',
@@ -23,10 +24,13 @@ export class BookListComponent implements OnInit {
   /** Column definitions in order */
   displayedColumns = this.columns.map(x => x.columnDef);
 
-  constructor() { }
+  constructor(private bookService: BookService) { }
 
   ngOnInit() {
-    this.dataSource = new MatTableDataSource(this.books);
+    this.dataSource = new MatTableDataSource<Book>()
+    this.bookService.getAll().subscribe((res: Book[]) => {
+      this.dataSource.data = res
+    })
   }
 
 }

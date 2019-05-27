@@ -1,5 +1,5 @@
 # from main.model.books import Book
-from main.model.genre import GenreSchema, Genre
+from backend.src.main.model.genre import GenreSchema, Genre
 from backend.src.main.model.books import Book
 from marshmallow import ValidationError, INCLUDE
 

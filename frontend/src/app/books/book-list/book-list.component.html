@@ -1,6 +1,6 @@
 <div fxLayoutAlign="center">
-  <div class="mat-elevation-z8" fxFlex='70'>
-    <table mat-table [dataSource]="dataSource" style='width: 100%'>
+  <div fxFlex='70' style='margin-top: 10px;margin-bottom: 10px; height: 500px;'>
+    <table mat-table [dataSource]="dataSource" style='width: 100%;'>
 
       <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
         <th mat-header-cell *matHeaderCellDef> {{column.header}} </th>
