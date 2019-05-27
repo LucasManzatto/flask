@@ -4,6 +4,7 @@ from backend.src.main import db
 from backend.src.main.model.author import Author, AuthorSchema
 from backend.src.main.model.series import Series
 from backend.src.main.util.utils import response_created, response_conflict, response_success, response_bad_request
+from sqlalchemy import or_, and_
 
 
 def upsert_author(data, update):
@@ -43,8 +44,25 @@ def update_existing_author(data, series):
     return response_success('Author successfully updated.')
 
 
-def get_all_authors():
-    return Author.query.all()
+def get_all_authors(args):
+    query_all = get_query_all(args["query_all"])
+    query_by_column = get_query_by_column(args['id'], args['name'])
+    query_filter = Author.query.filter(
+        query_all, query_by_column).paginate(page=0, error_out=False, max_per_page=10)
+    return query_filter
+
+
+def get_query_all(query):
+    query = f'%{query}%'
+    id_query = Author.id.like(query)
+    name_query = Author.name.like(query)
+    return or_(id_query, name_query)
+
+
+def get_query_by_column(id, name):
+    id_query = Author.id.like(f'%{id}%')
+    name_query = Author.name.like(f'%{name}%')
+    return and_(id_query, name_query)
 
 
 def get_an_author(author_id):

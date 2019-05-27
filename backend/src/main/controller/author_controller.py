@@ -3,18 +3,27 @@ from flask_restplus import Resource
 
 from backend.src.main.service import author_service
 from backend.src.main.util.dto import AuthorDTO
+from webargs import fields
+from webargs.flaskparser import use_args
 
 api = AuthorDTO.api
+
+author_args = {
+    "query_all": fields.Str(missing=''),
+    "id": fields.Str(missing=''),
+    "name": fields.Str(missing='')
+}
 
 
 @api.route('/')
 @api.doc(
     responses={200: 'OK', 201: 'Created', 400: 'Invalid Argument', 404: 'Author not found.', 500: 'Mapping Key Error'})
 class AuthorCollection(Resource):
-    @api.marshal_list_with(AuthorDTO.author_list, code=201)
-    def get(self):
+    @api.marshal_list_with(AuthorDTO.author_query, code=201)
+    @use_args(author_args)
+    def get(self, args):
         """List all authors."""
-        return author_service.get_all_authors()
+        return author_service.get_all_authors(args)
 
     @api.expect(AuthorDTO.author_create)
     def post(self):

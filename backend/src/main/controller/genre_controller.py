@@ -3,29 +3,34 @@ from flask_restplus import Resource
 from backend.src.main.service import genre_service
 
 from backend.src.main.util.dto import GenreDTO
+from webargs import fields
+from webargs.flaskparser import use_args
 
 api = GenreDTO.api
-genre_create = GenreDTO.genre_create
-genre_update = GenreDTO.genre_update
-genre_list = GenreDTO.genre_list
-genre_books_list = GenreDTO.genre_books
+
+genre_args = {
+    "query_all": fields.Str(missing=''),
+    "id": fields.Str(missing=''),
+    "name": fields.Str(missing='')
+}
 
 
 @api.route('/')
 @api.doc(
     responses={200: 'OK', 201: 'Created', 400: 'Invalid Argument', 404: 'Genre not found.', 500: 'Mapping Key Error'})
 class BooksCollection(Resource):
-    @api.marshal_list_with(genre_list, code=201)
-    def get(self):
+    @api.marshal_list_with(GenreDTO.genre_query, code=201)
+    @use_args(genre_args)
+    def get(self, args):
         """List all genres."""
-        return genre_service.get_all_genres()
+        return genre_service.get_all_genres(args)
 
-    @api.expect(genre_create)
+    @api.expect(GenreDTO.genre_create)
     def post(self):
         """Creates a new genre."""
         return genre_service.upsert_genre(request.json, update=False)
 
-    @api.expect(genre_update)
+    @api.expect(GenreDTO.genre_update)
     def put(self):
         """Updates a genre."""
         return genre_service.upsert_genre(request.json, update=True)
@@ -34,7 +39,7 @@ class BooksCollection(Resource):
 @api.route('/<int:id>')
 class BookItem(Resource):
     @staticmethod
-    @api.marshal_with(genre_list)
+    @api.marshal_with(GenreDTO.genre_list)
     def get(id):
         """Find a genre by the ID."""
         return genre_service.get_a_genre(id)
@@ -47,7 +52,7 @@ class BookItem(Resource):
 
 @api.route('/<int:id>/books')
 class GenreBookCollection(Resource):
-    @api.marshal_with(genre_books_list)
+    @api.marshal_with(GenreDTO.genre_books)
     def get(self, id):
         """Find the genre books."""
         return genre_service.get_genre_books(id)

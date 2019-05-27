@@ -8,6 +8,7 @@ from backend.src.main.model.author import Author
 from backend.src.main.model.books import Book, BookSchema
 from backend.src.main.model.series import Series
 from backend.src.main.util.utils import response_success, response_conflict, response_created, response_bad_request
+from sqlalchemy import or_, and_
 
 
 def upsert_book(data, update):
@@ -47,8 +48,27 @@ def update_existing_book(data, genres):
     return response_success("Book successfully updated.")
 
 
-def get_all_books():
-    return Book.query.all()
+def get_all_books(args):
+    query_all = get_query_all(args["query_all"])
+    query_by_column = get_query_by_column(args['id'], args['title'], args['author'])
+    query_filter = Book.query.join(Author).filter(
+        query_all, query_by_column).paginate(page=0, error_out=False, max_per_page=10)
+    return query_filter
+
+
+def get_query_all(query):
+    query = f'%{query}%'
+    id_query = Book.id.like(query)
+    title_query = Book.title.like(query)
+    author_query = Author.name.like(query)
+    return or_(id_query, title_query, author_query)
+
+
+def get_query_by_column(id, description, author):
+    id_query = Book.id.like(f'%{id}%')
+    title_query = Book.title.like(f'%{description}%')
+    author_query = Author.name.like(f'%{author}%')
+    return and_(id_query, title_query, author_query)
 
 
 def get_a_book(book_id):

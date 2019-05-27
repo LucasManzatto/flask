@@ -66,4 +66,5 @@ SQLAlchemy-Utils==0.33.9
 text-unidecode==1.2
 utmp==0.4
 virtualenv==16.4.3
+webargs==5.3.1
 Werkzeug==0.15.2

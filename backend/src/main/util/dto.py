@@ -36,6 +36,12 @@ class AuthorDTO:
         'books': fields.Nested(author_books),
         'series': fields.Nested(author_series)
     })
+    author_query = api.model('Author_Query', {
+        'items': fields.List(fields.Nested(author_list)),
+        'total': fields.Integer(),
+        'page': fields.Integer(),
+        'per_page': fields.Integer()
+    })
 
 
 class BookDTO:
@@ -80,6 +86,12 @@ class BookDTO:
         'series': fields.Nested(book_series),
         'genres': fields.Nested(book_genre)
     })
+    book_query = api.model('Book_Query', {
+        'items': fields.List(fields.Nested(book_list)),
+        'total': fields.Integer(),
+        'page': fields.Integer(),
+        'per_page': fields.Integer()
+    })
 
 
 class GenreDTO:
@@ -105,6 +117,12 @@ class GenreDTO:
     genre_list = api.clone('Genre_List', genre_base, {
         'id': fields.Integer(description='The ID of the genre.'),
         'books': fields.Nested(genre_books)
+    })
+    genre_query = api.model('Genre_Query', {
+        'items': fields.List(fields.Nested(genre_list)),
+        'total': fields.Integer(),
+        'page': fields.Integer(),
+        'per_page': fields.Integer()
     })
 
 
@@ -139,4 +157,10 @@ class SeriesDTO:
         'id': fields.Integer(description='The ID of the series.'),
         'books': fields.Nested(series_books),
         'authors': fields.Nested(series_authors)
+    })
+    series_query = api.model('Series_Query', {
+        'items': fields.List(fields.Nested(series_list)),
+        'total': fields.Integer(),
+        'page': fields.Integer(),
+        'per_page': fields.Integer()
     })

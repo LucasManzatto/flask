@@ -30,7 +30,7 @@ class GenericTests:
     def get_all(self, test_client, db_session):
         table_row_size = db_session.query(self.model).count()
         response = test_client.get(f'/{self.endpoint}/')
-        response_size = len(response.json)
+        response_size = len(response.json['items'])
         assert success(response)
         assert table_row_size == response_size
 

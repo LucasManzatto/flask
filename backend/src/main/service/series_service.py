@@ -5,6 +5,7 @@ from backend.src.main import db
 from backend.src.main.model.books import Book
 from backend.src.main.model.series import Series, SeriesSchema
 from backend.src.main.util.utils import response_created, response_success, response_conflict, response_bad_request
+from sqlalchemy import or_, and_
 
 
 def upsert_series(data, update):
@@ -44,8 +45,27 @@ def update_series(books, data):
     return response_success('Series updated successfully.')
 
 
-def get_all_series():
-    return Series.query.all()
+def get_all_series(args):
+    query_all = get_query_all(args["query_all"])
+    query_by_column = get_query_by_column(args['id'], args['title'], args['description'])
+    query_filter = Series.query.filter(
+        query_all, query_by_column).paginate(page=0, error_out=False, max_per_page=10)
+    return query_filter
+
+
+def get_query_all(query):
+    query = f'%{query}%'
+    id_query = Series.id.like(query)
+    title_query = Series.title.like(query)
+    description_query = Series.description.like(query)
+    return or_(id_query, title_query, description_query)
+
+
+def get_query_by_column(id, description, title):
+    id_query = Series.id.like(f'%{id}%')
+    title_query = Series.title.like(f'%{title}%')
+    description_query = Series.description.like(f'%{description}%')
+    return and_(id_query, title_query, description_query)
 
 
 def get_a_series(series_id):

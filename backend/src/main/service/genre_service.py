@@ -5,6 +5,7 @@ from marshmallow import ValidationError, INCLUDE
 
 from backend.src.main import db
 from backend.src.main.util.utils import response_created, response_conflict, response_success, response_bad_request
+from sqlalchemy import or_, and_
 
 
 def upsert_genre(data, update):
@@ -44,8 +45,25 @@ def update_existing_genre(data, books):
     return response_success('Genre successfully updated.')
 
 
-def get_all_genres():
-    return Genre.query.all()
+def get_all_genres(args):
+    query_all = get_query_all(args["query_all"])
+    query_by_column = get_query_by_column(args['id'], args['name'])
+    query_filter = Genre.query.filter(
+        query_all, query_by_column).paginate(page=0, error_out=False, max_per_page=10)
+    return query_filter
+
+
+def get_query_all(query):
+    query = f'%{query}%'
+    id_query = Genre.id.like(query)
+    name_query = Genre.name.like(query)
+    return or_(id_query, name_query)
+
+
+def get_query_by_column(id, name):
+    id_query = Genre.id.like(f'%{id}%')
+    name_query = Genre.name.like(f'%{name}%')
+    return and_(id_query, name_query)
 
 
 def get_a_genre(genre_id):
