@@ -8,6 +8,7 @@ import { MatSort } from '@angular/material/sort';
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 import { fromEvent } from 'rxjs';
 import { DEBOUNCE_TIME, PAGE_SIZES } from 'src/app/shared/parameters';
+import { DefaultQuery } from 'src/app/shared/models/query.model';
 
 @Component({
   selector: 'app-book-list',
@@ -30,10 +31,16 @@ export class BookListComponent implements OnInit, AfterViewInit {
     { columnDef: 'author', header: 'Author', cell: (row: Book) => `${row.author.name}` }
   ];
   displayedColumns = this.columns.map(x => x.columnDef);
-  filterAll: string;
-  filterId: string;
-  filterDescription: string;
-  filterAuthor: string;
+  filterId = '';
+  filterTitle = '';
+  filterAuthor = '';
+
+  defaultParameters: DefaultQuery = {
+    'page': '0',
+    'direction': 'ASC',
+    'query_all': '',
+    'sort_column': 'id'
+  };
 
   constructor(private bookService: BookService) { }
 
@@ -43,17 +50,13 @@ export class BookListComponent implements OnInit, AfterViewInit {
     this.loadData();
   }
   ngAfterViewInit(): void {
-    this.startSort();
+    // this.startSort();
     this.startPaginator();
     this.startFilter(this.inputFilterAll);
   }
 
-  applyFilter(filterValue: string) {
-    const query_all = filterValue.trim().toLowerCase();
-
-  }
   loadData() {
-    this.bookService.getAll(this.filterAll)
+    this.bookService.getAll(this.defaultParameters, this.filterId, this.filterTitle, this.filterAuthor)
       .subscribe(res => {
         this.dataSource.data = res.items;
         this.totalPageElements = res.total;
@@ -72,7 +75,6 @@ export class BookListComponent implements OnInit, AfterViewInit {
 
   startPaginator() {
     this.dataSource.paginator = this.paginator;
-    this.paginator.pageSizeOptions = PAGE_SIZES;
     this.paginator.page.pipe(
       tap(() => {
         this.loadData();

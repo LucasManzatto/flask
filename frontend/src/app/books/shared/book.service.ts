@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Query } from '../../shared/models/query.model';
+import { Query, DefaultQuery } from '../../shared/models/query.model';
 
 @Injectable({
     providedIn: 'root',
@@ -11,13 +11,16 @@ export class BookService {
     constructor(private http: HttpClient) {
 
     }
-    public getAll(query_all = '', id = '', title = '', author = '') {
+    public getAll(defaultParameters: DefaultQuery, id = '', title = '', author = '') {
         return this.http.get<Query>(this.url, {
             params: {
-                'query_all': query_all,
+                'page': defaultParameters.page,
+                'direction': defaultParameters.direction,
+                'sort_column': defaultParameters.sort_column,
+                'query_all': defaultParameters.query_all,
                 'id': id,
                 'title': title,
-                'author': author
+                'author_name': author
             }
         });
     }
