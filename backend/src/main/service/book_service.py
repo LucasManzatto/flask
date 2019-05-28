@@ -49,26 +49,30 @@ def update_existing_book(data, genres):
 
 
 def get_all_books(args):
-    query_all = get_query_all(args["query_all"])
-    query_by_column = get_query_by_column(args['id'], args['title'], args['author'])
-    query_filter = Book.query.join(Author).filter(
-        query_all, query_by_column).paginate(page=0, error_out=False, max_per_page=10)
+    query_all = get_query(args["query_all"])
+    query_by_column = get_query(args['id'], args['title'], args['author'])
+    query_filter = Book.query.join(Author).filter(query_all, query_by_column).paginate(page=0, error_out=False,
+                                                                                       max_per_page=10)
     return query_filter
 
 
-def get_query_all(query):
-    query = f'%{query}%'
-    id_query = Book.id.like(query)
-    title_query = Book.title.like(query)
-    author_query = Author.name.like(query)
-    return or_(id_query, title_query, author_query)
+def get_query(id, title=None, author_name=None):
+    filter_all = False
+
+    if not title and not author_name:
+        title = id
+        author_name = id
+        filter_all = True
+
+    id_query = Book.id.like(wildcard(id))
+    title_query = Book.title.like(wildcard(title))
+    author_query = Author.name.like(wildcard(author_name))
+
+    return or_(id_query, title_query, author_query) if filter_all else and_(id_query, title_query, author_query)
 
 
-def get_query_by_column(id, description, author):
-    id_query = Book.id.like(f'%{id}%')
-    title_query = Book.title.like(f'%{description}%')
-    author_query = Author.name.like(f'%{author}%')
-    return and_(id_query, title_query, author_query)
+def wildcard(column):
+    return f'%{column}%'
 
 
 def get_a_book(book_id):

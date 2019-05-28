@@ -170,3 +170,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+/backend/src/main/test.db-wal
+/backend/src/main/main.db-wal
+/backend/src/main/main.db-shm
+/backend/src/main/test.db-shm
