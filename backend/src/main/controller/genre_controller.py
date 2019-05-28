@@ -2,7 +2,7 @@ from flask import request
 from flask_restplus import Resource
 from backend.src.main.service import genre_service
 
-from backend.src.main.util.dto import GenreDTO
+from backend.src.main.util.dto import GenreDTO, base_args
 from webargs import fields
 from webargs.flaskparser import use_args
 
@@ -13,6 +13,7 @@ genre_args = {
     "id": fields.Str(missing=''),
     "name": fields.Str(missing='')
 }
+genre_args.update(base_args)
 
 
 @api.route('/')

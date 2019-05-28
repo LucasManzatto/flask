@@ -1,4 +1,5 @@
 from flask_restplus._http import HTTPStatus
+from backend.src.main.service import utils
 from marshmallow import ValidationError
 
 from backend.src.main import db
@@ -46,26 +47,12 @@ def update_series(books, data):
 
 
 def get_all_series(args):
-    query_all = get_query_all(args["query_all"])
-    query_by_column = get_query_by_column(args['id'], args['title'], args['description'])
-    query_filter = Series.query.filter(
-        query_all, query_by_column).paginate(page=0, error_out=False, max_per_page=10)
+    page = args.pop('page', 0)
+    sort_query = utils.get_sort_query(args, Series)
+    sub_queries = utils.get_query(Series, args)
+    query_filter = Series.query.filter(*sub_queries).order_by(sort_query).paginate(page=page, error_out=False,
+                                                                                   max_per_page=10)
     return query_filter
-
-
-def get_query_all(query):
-    query = f'%{query}%'
-    id_query = Series.id.like(query)
-    title_query = Series.title.like(query)
-    description_query = Series.description.like(query)
-    return or_(id_query, title_query, description_query)
-
-
-def get_query_by_column(id, description, title):
-    id_query = Series.id.like(f'%{id}%')
-    title_query = Series.title.like(f'%{title}%')
-    description_query = Series.description.like(f'%{description}%')
-    return and_(id_query, title_query, description_query)
 
 
 def get_a_series(series_id):

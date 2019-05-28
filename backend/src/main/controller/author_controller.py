@@ -2,17 +2,17 @@ from flask import request
 from flask_restplus import Resource
 
 from backend.src.main.service import author_service
-from backend.src.main.util.dto import AuthorDTO
+from backend.src.main.util.dto import AuthorDTO, base_args
 from webargs import fields
 from webargs.flaskparser import use_args
 
 api = AuthorDTO.api
 
 author_args = {
-    "query_all": fields.Str(missing=''),
     "id": fields.Str(missing=''),
     "name": fields.Str(missing='')
 }
+author_args.update(base_args)
 
 
 @api.route('/')

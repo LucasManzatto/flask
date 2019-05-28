@@ -1,6 +1,7 @@
 # from main.model.books import Book
 from backend.src.main.model.genre import GenreSchema, Genre
 from backend.src.main.model.books import Book
+from backend.src.main.service import utils
 from marshmallow import ValidationError, INCLUDE
 
 from backend.src.main import db
@@ -46,24 +47,11 @@ def update_existing_genre(data, books):
 
 
 def get_all_genres(args):
-    query_all = get_query_all(args["query_all"])
-    query_by_column = get_query_by_column(args['id'], args['name'])
-    query_filter = Genre.query.filter(
-        query_all, query_by_column).paginate(page=0, error_out=False, max_per_page=10)
+    page = args.pop('page', 0)
+    sort_query = utils.get_sort_query(args, Genre)
+    sub_queries = utils.get_query(Genre, args)
+    query_filter = Genre.query.filter(*sub_queries).order_by(sort_query).paginate(page=page, error_out=False, max_per_page=10)
     return query_filter
-
-
-def get_query_all(query):
-    query = f'%{query}%'
-    id_query = Genre.id.like(query)
-    name_query = Genre.name.like(query)
-    return or_(id_query, name_query)
-
-
-def get_query_by_column(id, name):
-    id_query = Genre.id.like(f'%{id}%')
-    name_query = Genre.name.like(f'%{name}%')
-    return and_(id_query, name_query)
 
 
 def get_a_genre(genre_id):

@@ -1,6 +1,7 @@
 from flask_restplus import abort
 from flask_restplus._http import HTTPStatus
 from backend.src.main.model.genre import Genre
+from backend.src.main.service import utils
 from marshmallow import ValidationError
 
 from backend.src.main import db
@@ -49,30 +50,13 @@ def update_existing_book(data, genres):
 
 
 def get_all_books(args):
-    query_all = get_query(args["query_all"])
-    query_by_column = get_query(args['id'], args['title'], args['author'])
-    query_filter = Book.query.join(Author).filter(query_all, query_by_column).paginate(page=0, error_out=False,
-                                                                                       max_per_page=10)
+    page = int(args.pop('page', 0))
+    sort_query = utils.get_sort_query(args, Book)
+    sub_queries = utils.get_query(Book, args)
+    query_filter = Book.query.join(Author).filter(*sub_queries).order_by(sort_query).paginate(page=page,
+                                                                                              error_out=False,
+                                                                                              max_per_page=10)
     return query_filter
-
-
-def get_query(id, title=None, author_name=None):
-    filter_all = False
-
-    if not title and not author_name:
-        title = id
-        author_name = id
-        filter_all = True
-
-    id_query = Book.id.like(wildcard(id))
-    title_query = Book.title.like(wildcard(title))
-    author_query = Author.name.like(wildcard(author_name))
-
-    return or_(id_query, title_query, author_query) if filter_all else and_(id_query, title_query, author_query)
-
-
-def wildcard(column):
-    return f'%{column}%'
 
 
 def get_a_book(book_id):

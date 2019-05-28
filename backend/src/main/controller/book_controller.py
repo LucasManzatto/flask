@@ -2,19 +2,19 @@ from flask import request
 from flask_restplus import Resource
 
 from backend.src.main.service import book_service
-from backend.src.main.util.dto import BookDTO
+from backend.src.main.util.dto import BookDTO, base_args
 from webargs import fields
 from webargs.flaskparser import use_args
 
 api = BookDTO.api
 
 books_args = {
-    "query_all": fields.Str(missing=''),
     "id": fields.Str(missing=''),
     "title": fields.Str(missing=''),
     "description": fields.Str(missing=''),
-    'author': fields.Str(missing='')
+    'author_name': fields.Str(missing='')
 }
+books_args.update(base_args)
 
 
 @api.route('/')

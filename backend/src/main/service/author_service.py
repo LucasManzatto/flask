@@ -1,3 +1,4 @@
+from backend.src.main.service import utils
 from marshmallow import ValidationError, INCLUDE
 
 from backend.src.main import db
@@ -45,24 +46,11 @@ def update_existing_author(data, series):
 
 
 def get_all_authors(args):
-    query_all = get_query_all(args["query_all"])
-    query_by_column = get_query_by_column(args['id'], args['name'])
-    query_filter = Author.query.filter(
-        query_all, query_by_column).paginate(page=0, error_out=False, max_per_page=10)
-    return query_filter
-
-
-def get_query_all(query):
-    query = f'%{query}%'
-    id_query = Author.id.like(query)
-    name_query = Author.name.like(query)
-    return or_(id_query, name_query)
-
-
-def get_query_by_column(id, name):
-    id_query = Author.id.like(f'%{id}%')
-    name_query = Author.name.like(f'%{name}%')
-    return and_(id_query, name_query)
+    page = args.pop('page', 0)
+    sort_query = utils.get_sort_query(args, Author)
+    sub_queries = utils.get_query(Author, args)
+    query = Author.query.filter(*sub_queries).order_by(sort_query).paginate(page=page, error_out=False, max_per_page=10)
+    return query
 
 
 def get_an_author(author_id):

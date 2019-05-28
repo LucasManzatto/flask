@@ -1,6 +1,14 @@
 from flask_restplus import fields
+from webargs import fields as webargs_fields
 
 from backend.src.main import api
+
+base_args = {
+    "page": webargs_fields.Str(missing=0),
+    "direction": webargs_fields.Str(missing='ASC'),
+    "sort_column": webargs_fields.Str(missing='id'),
+    "query_all": webargs_fields.Str(missing=''),
+}
 
 
 class AuthorDTO:
