@@ -11,7 +11,7 @@ export class BookService {
     constructor(private http: HttpClient) {
 
     }
-    public getAll(defaultParameters: DefaultQuery, id = '', title = '', author = '') {
+    public getAll(defaultParameters: DefaultQuery, id = '', title = '', author_name = '') {
         return this.http.get<Query>(this.url, {
             params: {
                 'page': defaultParameters.page,
@@ -20,7 +20,7 @@ export class BookService {
                 'query_all': defaultParameters.query_all,
                 'id': id,
                 'title': title,
-                'author_name': author
+                'author_name': author_name
             }
         });
     }

@@ -28,7 +28,7 @@ export class BookListComponent implements OnInit, AfterViewInit {
   columns = [
     { columnDef: 'id', header: 'ID', cell: (row: Book) => `${row.id}` },
     { columnDef: 'title', header: 'Title', cell: (row: Book) => `${row.title}` },
-    { columnDef: 'author', header: 'Author', cell: (row: Book) => `${row.author.name}` }
+    { columnDef: 'author_name', header: 'Author', cell: (row: Book) => `${row.author.name}` }
   ];
   displayedColumns = this.columns.map(x => x.columnDef);
   filterId = '';
