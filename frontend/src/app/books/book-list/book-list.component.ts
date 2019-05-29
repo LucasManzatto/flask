@@ -9,6 +9,7 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 import { fromEvent } from 'rxjs';
 import { DEBOUNCE_TIME, PAGE_SIZES } from 'src/app/shared/parameters';
 import { DefaultQuery } from 'src/app/shared/models/query.model';
+import { ColumnModel } from '../../shared/models/column.model';
 
 @Component({
   selector: 'app-book-list',
@@ -25,34 +26,34 @@ export class BookListComponent implements OnInit, AfterViewInit {
   totalPageElements: Number;
 
 
-  columns = [
-    { columnDef: 'id', header: 'ID', cell: (row: Book) => `${row.id}` },
-    { columnDef: 'title', header: 'Title', cell: (row: Book) => `${row.title}` },
-    { columnDef: 'author_name', header: 'Author', cell: (row: Book) => `${row.author.name}` }
-  ];
-  displayedColumns = this.columns.map(x => x.columnDef);
+  columns: ColumnModel[];
+  displayedColumns: string[];
   filterId = '';
   filterTitle = '';
   filterAuthor = '';
 
-  defaultParameters: DefaultQuery = {
-    'page': '0',
-    'direction': 'ASC',
-    'query_all': '',
-    'sort_column': 'id'
-  };
+  defaultParameters = new DefaultQuery();
 
   constructor(private bookService: BookService) { }
 
   ngOnInit() {
+    this.initColumns();
     this.dataSource = new MatTableDataSource<Book>();
-
     this.loadData();
   }
   ngAfterViewInit(): void {
-    // this.startSort();
+    this.startSort();
     this.startPaginator();
     this.startFilter(this.inputFilterAll);
+  }
+
+  initColumns() {
+    this.columns = [
+      { columnDef: 'id', header: 'ID', cell: (row: Book) => `${row.id}` },
+      { columnDef: 'title', header: 'Title', cell: (row: Book) => `${row.title}` },
+      { columnDef: 'author_name', header: 'Author', cell: (row: Book) => `${row.author.name}` }
+    ];
+    this.displayedColumns = this.columns.map(x => x.columnDef);
   }
 
   loadData() {

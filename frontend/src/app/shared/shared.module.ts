@@ -7,10 +7,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
+import { MatSortModule } from '@angular/material/sort';
 @NgModule({
     declarations: [],
     imports: [CommonModule],
-    exports: [MatIconModule, MatToolbarModule, MatFormFieldModule, MatInputModule, MatTabsModule, MatTableModule, MatPaginatorModule],
+    exports: [MatIconModule, MatToolbarModule, MatFormFieldModule, MatInputModule,
+        MatTabsModule, MatTableModule, MatPaginatorModule, MatSortModule],
     providers: [],
 })
 export class SharedModule { }

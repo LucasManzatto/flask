@@ -16,6 +16,34 @@ describe('BookService', () => {
     let backend: HttpTestingController;
     let service: BookService;
 
+    const defaultParams = ['page', 'direction', 'sort_column', 'query_all'];
+    const defaultQuery: DefaultQuery = {
+        direction: 'ASC',
+        page: '1',
+        query_all: '',
+        sort_column: 'id'
+    };
+    const items: Book[] = [{
+        id: 1,
+        title: 'Test 1',
+        author: {
+            name: 'Author 1'
+        }
+    },
+    {
+        id: 2,
+        title: 'Test 2',
+        author: {
+            name: 'Author 2'
+        }
+    }];
+    const query: Query = {
+        items,
+        page: 1,
+        per_page: 10,
+        total: items.length
+    };
+
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [BookService],
@@ -35,46 +63,15 @@ describe('BookService', () => {
         expect(service).toBeTruthy();
     });
     it('returned Observable should match the right data', () => {
-        const params = sortBy(['page', 'direction', 'sort_column', 'query_all', 'id', 'title', 'author_name'])
-        const items = [{
-            id: 1,
-            title: 'Test 1',
-            author: {
-                name: 'Author 1'
-            }
-        },
-        {
-            id: 2,
-            title: 'Test 2',
-            author: {
-                name: 'Author 2'
-            }
-        }];
-        const total = items.length;
-        const query: Query = {
-            items,
-            page: 1,
-            per_page: 10,
-            total
-        };
-
-        const defaultQuery: DefaultQuery = {
-            direction: 'ASC',
-            page: '1',
-            query_all: '',
-            sort_column: 'id'
-        };
-
-        service.getAll(defaultQuery, '', '', '').subscribe(res => {
-            expect(res.page).toEqual(1);
-            expect(res.total).toBe(2);
+        const params = sortBy(['id', 'title', 'author_name'].concat(defaultParams));
+        service.getAll(defaultQuery).subscribe(res => {
+            expect(res.page).toEqual(query.page);
+            expect(res.total).toBe(query.total);
             expect(res.items).toEqual(items);
         });
 
         backend.match((request: HttpRequest<any>) => {
-            return request.url === service.url &&
-                request.urlWithParams ===
-                'http://localhost:5000/books/?page=1&direction=ASC&sort_column=id&query_all=&id=&title=&author_name=' &&
+            return request.url === service.getAllBooksUrl &&
                 request.method === 'GET' &&
                 isEqual(sortBy(request.params.keys()), params) &&
                 request.params.get('direction') === defaultQuery.direction &&
@@ -83,6 +80,32 @@ describe('BookService', () => {
                 request.params.get('query_all') === defaultQuery.query_all &&
                 request.responseType === 'json';
         })[0].flush(query);
-        backend.expectNone(service.url);
+    });
+
+    it('should match when no parameters are passed on getAll()', () => {
+        const params = sortBy(['id', 'title', 'author_name'].concat(defaultParams));
+        service.getAll().subscribe(res => {
+            expect(res.page).toEqual(1);
+            expect(res.total).toBe(2);
+            expect(res.items).toEqual(items);
+        });
+        backend.match(request => {
+            return request.url === service.getAllBooksUrl &&
+                request.method === 'GET' &&
+                isEqual(sortBy(request.params.keys()), params);
+        })[0].flush(query);
+    });
+
+    it('should return book from getBook()', () => {
+        const book = items[0];
+        service.getBook(book.id).subscribe(res => {
+            expect(res).toEqual(book);
+        });
+        backend.expectOne(`${service.booksUrl}/${book.id}`).flush(book);
+    });
+
+    it('should return not found from getBook()', () => {
+        service.getBook(-1).subscribe();
+        backend.expectOne(`${service.booksUrl}/-1`);
     });
 });

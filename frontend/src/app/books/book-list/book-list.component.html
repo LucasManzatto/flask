@@ -2,7 +2,7 @@
   <div fxFlex='70' style='margin-top: 10px;margin-bottom: 10px; height: 500px;'>
 
     <mat-form-field>
-      <input matInput #iptFilterAll [(ngModel)]='defaultParameters.query_all' placeholder="Filter">
+      <input id='iptFilterAll' matInput #iptFilterAll [(ngModel)]='defaultParameters.query_all' placeholder="Filter">
     </mat-form-field>
     <table mat-table [dataSource]="dataSource" style='width: 100%;' matSort>
 
