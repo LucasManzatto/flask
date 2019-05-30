@@ -9,7 +9,8 @@ from backend.src.main.model.author import Author
 from backend.src.main.model.books import Book, BookSchema
 from backend.src.main.model.series import Series
 from backend.src.main.util.utils import response_success, response_conflict, response_created, response_bad_request
-from sqlalchemy import or_, and_
+from sqlalchemy import or_, and_, text
+from sqlalchemy.orm import joinedload
 
 
 def upsert_book(data, update):
@@ -53,9 +54,10 @@ def get_all_books(args):
     page = int(args.pop('page', 0))
     sort_query = utils.get_sort_query(args, Book)
     sub_queries = utils.get_query(Book, args)
-    query_filter = Book.query.join(Author).filter(*sub_queries).order_by(sort_query).paginate(page=page,
-                                                                                              error_out=False,
-                                                                                              max_per_page=10)
+    query_filter = Book.query.join(Author).options(joinedload('author')).filter(*sub_queries).order_by(
+        sort_query).paginate(page=0,
+                             error_out=False,
+                             max_per_page=10)
     return query_filter
 
 

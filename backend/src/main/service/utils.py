@@ -31,7 +31,11 @@ def create_query(model, key, query):
 def get_sort_query(args, model):
     direction = args.pop('direction', 'ASC')
     sort_column = args.pop('sort_column', 'id')
-    return getattr(model, sort_column).desc() if direction == 'DESC' else getattr(model, sort_column).asc()
+    sort_by_fk = re.split('_', sort_column)
+    if len(sort_by_fk) == 2:
+        model = get_class_by_tablename(sort_by_fk[0])
+        sort_column = sort_by_fk[1]
+    return getattr(model, sort_column).desc() if direction.upper() == 'DESC' else getattr(model, sort_column).asc()
 
 
 def get_class_by_tablename(tablename):
