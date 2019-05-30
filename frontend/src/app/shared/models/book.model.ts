@@ -7,6 +7,6 @@ export class Book {
     title: string;
     description?: string;
     author: Author;
-    series?: Series[];
+    series?: Series;
     genres?: Genre[];
 }

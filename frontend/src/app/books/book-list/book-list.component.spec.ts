@@ -10,6 +10,10 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule } from '@angular/forms';
 import { isFunction } from 'lodash';
 import { DEBOUNCE_TIME } from '../../shared/parameters';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { BookAddComponent } from './book-add/book-add.component';
+import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
+import { of } from 'rxjs';
 
 describe('BookListComponent', () => {
   let component: BookListComponent;
@@ -17,14 +21,17 @@ describe('BookListComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [
-        AppRoutingModule, BrowserAnimationsModule, BrowserModule, HttpClientModule, SharedModule, FlexLayoutModule, FormsModule
+      imports: [AppRoutingModule, BrowserAnimationsModule,
+        BrowserModule, HttpClientModule, SharedModule, FlexLayoutModule, FormsModule
       ],
-      declarations: [BookListComponent],
-      // providers: [{
-      //   provide: HAMMER_LOADER,
-      //   useValue: () => new Promise(() => { })
-      // }]
+      declarations: [BookListComponent, BookAddComponent],
+      providers: [
+        { provide: MatDialogRef, useValue: {} }
+      ]
+    }).overrideModule(BrowserDynamicTestingModule, {
+      set: {
+        entryComponents: [BookAddComponent],
+      }
     })
       .compileComponents();
   }));
@@ -48,63 +55,69 @@ describe('BookListComponent', () => {
     expect(component.paginator).toBeDefined();
   });
 
-  it('should start paginator on AfterViewInit', () => {
-    const paginatorSpy = spyOn(component, 'startPaginator').and.callThrough();
-    component.ngAfterViewInit();
-    expect(paginatorSpy).toHaveBeenCalled();
-  });
+
 
   it('should have a sort', () => {
     expect(component.sort).toBeDefined();
     expect(component.dataSource.sort).toEqual(component.sort);
   });
 
-  it('should start sort on AfterViewInit', () => {
-    const paginatorSpy = spyOn(component, 'startSort');
-    component.ngAfterViewInit();
-    expect(paginatorSpy).toHaveBeenCalled();
+  describe('AfterViewInit', () => {
+    it('should start paginator', () => {
+      const paginatorSpy = spyOn(component, 'startPaginator');
+      component.ngAfterViewInit();
+      expect(paginatorSpy).toHaveBeenCalled();
+    });
+    it('should start sort', () => {
+      const sortSpy = spyOn(component, 'startSort');
+      component.ngAfterViewInit();
+      expect(sortSpy).toHaveBeenCalled();
+    });
+    it('should start filters', () => {
+      const startFilterSpy = spyOn(component, 'startFilter');
+      component.ngAfterViewInit();
+      expect(startFilterSpy).toHaveBeenCalledWith(component.inputFilterAll);
+    });
   });
 
   it('should instantiate the table paginator', () => {
     expect(component.dataSource.paginator).toBe(component.paginator);
   });
 
-  it('should start filters', () => {
-    const startFilterSpy = spyOn(component, 'startFilter');
-    component.ngAfterViewInit();
-    expect(startFilterSpy).toHaveBeenCalledWith(component.inputFilterAll);
+  describe('should call loadData on', () => {
+    beforeEach(() => {
+      spyOn(component, 'loadData');
+    });
+    afterEach(fakeAsync(() => {
+      tick(DEBOUNCE_TIME);
+      fixture.whenStable().then(() => {
+        expect(component.loadData).toHaveBeenCalled();
+      });
+    }));
+    it('inputAll change', () => {
+      const input = fixture.debugElement.query(By.css('#iptFilterAll')).nativeElement;
+      input.value = 'test';
+      input.dispatchEvent(new Event('input'));
+      expect(component.defaultParameters.query_all).toBe('test');
+    });
+    it('page change', () => {
+      const paginator = component.dataSource.paginator;
+      if (paginator) {
+        paginator.pageIndex = 1;
+        paginator.page.emit();
+      }
+    });
+    it('sort change', () => {
+      const sort = component.dataSource.sort;
+      if (sort) {
+        sort.sort({ start: 'asc', id: 'id', disableClear: false });
+        sort.sortChange.emit();
+      }
+    });
+    it('ngOnInit', () => {
+      component.ngOnInit();
+    });
   });
-
-  it('should call loadData when inputAll changes', fakeAsync(() => {
-    spyOn(component, 'loadData');
-    const input = fixture.debugElement.query(By.css('#iptFilterAll')).nativeElement;
-    input.value = 'test';
-    input.dispatchEvent(new Event('input'));
-    tick(DEBOUNCE_TIME);
-    expect(component.defaultParameters.query_all).toBe('test');
-    expect(component.loadData).toHaveBeenCalled();
-  }));
-
-  it('should call loadData when page changes', fakeAsync(() => {
-    spyOn(component, 'loadData');
-    const paginator = component.dataSource.paginator;
-    if (paginator) {
-      paginator.pageIndex = 1;
-      paginator.page.emit();
-    }
-    tick(DEBOUNCE_TIME);
-    expect(component.loadData).toHaveBeenCalled();
-  }));
-
-  it('should call loadData when sort changes', fakeAsync(() => {
-    spyOn(component, 'loadData');
-    const sort = component.dataSource.sort;
-    if (sort) {
-      sort.sortChange.emit();
-    }
-    tick(DEBOUNCE_TIME);
-    expect(component.loadData).toHaveBeenCalled();
-  }));
 
   it('should return correct cell elements on table', () => {
     spyOn(component.columns[0], 'cell');
@@ -118,16 +131,58 @@ describe('BookListComponent', () => {
     expect(component.columns[0].cell).toHaveBeenCalled();
   });
 
-  it('should init columns and call loadData on ngOnInit', () => {
-    const columns = ['id', 'title', 'author_name'];
-    spyOn(component, 'initColumns');
-    spyOn(component, 'loadData');
-    component.ngOnInit();
-    expect(component.initColumns).toHaveBeenCalled();
-    expect(component.loadData).toHaveBeenCalled();
-    expect(component.columns.length).toEqual(3);
-    expect(component.displayedColumns).toEqual(columns);
-    expect(component.displayedColumns.length).toEqual(3);
+  describe('ngOnInit', () => {
+    it('should call initColumns', () => {
+      spyOn(component, 'initColumns');
+      component.ngOnInit();
+      expect(component.initColumns).toHaveBeenCalled();
+    });
+    it('should call loadData', () => {
+      spyOn(component, 'loadData');
+      component.ngOnInit();
+      expect(component.loadData).toHaveBeenCalled();
+    });
   });
 
+  describe('initColumns', () => {
+    const columns = ['id', 'title', 'author_name', 'series_title'];
+    const displayedColumns = ['select', 'id', 'title', 'author_name', 'series_title'];
+
+    beforeAll(() => {
+      component.initColumns();
+    });
+    it('should init columns array', () => {
+      expect(component.columns.length).toEqual(columns.length);
+    });
+    it('should init displayedColumns array with select as first column', () => {
+      expect(component.displayedColumns).toEqual(displayedColumns);
+      expect(component.displayedColumns.length).toEqual(displayedColumns.length);
+    });
+  });
+
+  it('should open BookAddComponent when add button is clicked', () => {
+    spyOn(component, 'openAddBookDialog');
+    const button = fixture.debugElement.query(By.css('#add-button')).nativeElement;
+    button.click();
+
+    fixture.whenStable().then(() => {
+      expect(component.openAddBookDialog).toHaveBeenCalled();
+    });
+  });
+
+  describe('openAddBookDialog', () => {
+    let dialogSpy: jasmine.Spy;
+    const dialogRefSpyObj = jasmine.createSpyObj({ afterClosed: of({}), close: null });
+    beforeEach(() => {
+      dialogSpy = spyOn(TestBed.get(MatDialog), 'open').and.returnValue(dialogRefSpyObj);
+      spyOn(component, 'loadData');
+      component.openAddBookDialog();
+    });
+    it('should open the BookAddComponent', () => {
+      expect(dialogSpy).toHaveBeenCalledWith(BookAddComponent);
+    });
+    it('should call loadData when dialog closes', () => {
+      expect(component.loadData).toHaveBeenCalled();
+    });
+  });
 });

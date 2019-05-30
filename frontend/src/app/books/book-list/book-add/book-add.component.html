@@ -1,3 +1,18 @@
-<p>
-  book-add works!
-</p>
+<h1 fxLayoutAlign="center center" mat-dialog-title style='color:#551a8b'>Add Book</h1>
+<div mat-dialog-content>
+  <div fxLayout="column">
+    <mat-form-field>
+      <input type="text" matInput placeholder="Title">
+    </mat-form-field>
+    <mat-form-field>
+      <input type="text" matInput placeholder="Author">
+    </mat-form-field>
+    <mat-form-field>
+      <input type="text" matInput placeholder="Series">
+    </mat-form-field>
+  </div>
+</div>
+<div mat-dialog-actions fxLayoutAlign="center center">
+    <button id='cancel-button' mat-button color='secondary' mat-dialog-close>Cancel</button>
+  <button id='add-button' mat-button color='primary'>Add Book</button>
+</div>

@@ -10,6 +10,9 @@ import { fromEvent } from 'rxjs';
 import { DEBOUNCE_TIME, PAGE_SIZES } from 'src/app/shared/parameters';
 import { DefaultQuery } from 'src/app/shared/models/query.model';
 import { ColumnModel } from '../../shared/models/column.model';
+import { MatDialog } from '@angular/material/dialog';
+import { BookAddComponent } from './book-add/book-add.component';
+import { SelectionModel } from '@angular/cdk/collections';
 
 @Component({
   selector: 'app-book-list',
@@ -33,8 +36,9 @@ export class BookListComponent implements OnInit, AfterViewInit {
   filterAuthor = '';
 
   defaultParameters = new DefaultQuery();
+  selection = new SelectionModel<Book>(true, []);
 
-  constructor(private bookService: BookService) { }
+  constructor(private bookService: BookService, public dialog: MatDialog) { }
 
   ngOnInit() {
     this.initColumns();
@@ -51,14 +55,22 @@ export class BookListComponent implements OnInit, AfterViewInit {
     this.columns = [
       { columnDef: 'id', header: 'ID', cell: (row: Book) => `${row.id}` },
       { columnDef: 'title', header: 'Title', cell: (row: Book) => `${row.title}` },
-      { columnDef: 'author_name', header: 'Author', cell: (row: Book) => `${row.author.name}` }
+      { columnDef: 'author_name', header: 'Author', cell: (row: Book) => `${row.author.name}` },
+      {
+        columnDef: 'series_title', header: 'Series', cell: (row: Book) => {
+          return row.series ? `${row.series.title}` : 'No Series';
+        }
+
+      }
     ];
-    this.displayedColumns = this.columns.map(x => x.columnDef);
+    this.displayedColumns = ['select'];
+    this.displayedColumns = this.displayedColumns.concat(this.columns.map(x => x.columnDef));
   }
 
   loadData() {
     this.bookService.getAll(this.defaultParameters, this.filterId, this.filterTitle, this.filterAuthor)
       .subscribe(res => {
+        this.selection.clear();
         this.dataSource.data = res.items;
         this.totalPageElements = res.total;
       });
@@ -93,6 +105,37 @@ export class BookListComponent implements OnInit, AfterViewInit {
         this.loadData();
       }
     });
+  }
+
+  openAddBookDialog() {
+    const dialogRef = this.dialog.open(BookAddComponent, { width: '50%' });
+    dialogRef.afterClosed().subscribe(result => {
+      this.loadData();
+    });
+  }
+
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    this.isAllSelected() ?
+      this.selection.clear() :
+      this.dataSource.data.forEach(row => this.selection.select(row));
+  }
+
+  /** The label for the checkbox on the passed row */
+  checkboxLabel(row?: Book): string {
+    if (row && row.id) {
+      return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
+    } else {
+      return `${this.isAllSelected() ? 'select' : 'deselect'} all`;
+
+    }
   }
 
 }

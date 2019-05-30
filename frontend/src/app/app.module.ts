@@ -19,6 +19,7 @@ import { BookAddComponent } from './books/book-list/book-add/book-add.component'
   imports: [
     AppRoutingModule, BrowserAnimationsModule, BrowserModule, HttpClientModule, SharedModule, FlexLayoutModule, FormsModule
   ],
+  entryComponents: [BookAddComponent],
   exports: [FlexLayoutModule],
   providers: [],
   bootstrap: [AppComponent]

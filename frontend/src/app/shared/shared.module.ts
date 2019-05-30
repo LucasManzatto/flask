@@ -9,11 +9,23 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
 import { MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatCheckboxModule} from '@angular/material/checkbox';
 @NgModule({
     declarations: [],
     imports: [CommonModule],
-    exports: [MatIconModule, MatToolbarModule, MatFormFieldModule, MatInputModule,
-        MatTabsModule, MatTableModule, MatPaginatorModule, MatSortModule, MatButtonModule],
+    exports: [MatIconModule,
+        MatToolbarModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatTabsModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatSortModule,
+        MatButtonModule,
+        MatDialogModule,
+        MatCheckboxModule
+    ],
     providers: [],
 })
 export class SharedModule { }
