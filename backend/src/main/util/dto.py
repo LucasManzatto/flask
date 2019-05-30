@@ -91,7 +91,7 @@ class BookDTO:
     book_list = api.clone('Book_List', book_base, {
         'id': fields.Integer(description='The ID of the book.'),
         'author': fields.Nested(book_author),
-        'series': fields.Nested(book_series),
+        'series': fields.Nested(book_series, allow_null=True),
         'genres': fields.Nested(book_genre)
     })
     book_query = api.model('Book_Query', {
