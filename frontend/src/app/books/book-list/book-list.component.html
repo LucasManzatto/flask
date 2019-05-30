@@ -15,6 +15,10 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
 
-    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons [length]='totalPageElements'></mat-paginator>
+    <div fxLayoutAlign="space-between start">
+      <button id='add-button' style='margin-top:5px' mat-fab color="primary"><mat-icon aria-hidden="false">add</mat-icon></button>
+      <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons [length]='totalPageElements'></mat-paginator>
+    </div>
+
   </div>
 </div>

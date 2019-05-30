@@ -86,8 +86,12 @@ export class BookListComponent implements OnInit, AfterViewInit {
   startSort() {
     this.dataSource.sort = this.sort;
     this.sort.sortChange.subscribe(res => {
-      this.paginator.firstPage();
-      this.loadData();
+      if (res) {
+        this.defaultParameters.sort_column = res.active;
+        this.defaultParameters.direction = res.direction;
+        this.paginator.firstPage();
+        this.loadData();
+      }
     });
   }
 

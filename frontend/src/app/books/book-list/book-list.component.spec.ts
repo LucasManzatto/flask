@@ -60,7 +60,7 @@ describe('BookListComponent', () => {
   });
 
   it('should start sort on AfterViewInit', () => {
-    const paginatorSpy = spyOn(component, 'startSort').and.callThrough();
+    const paginatorSpy = spyOn(component, 'startSort');
     component.ngAfterViewInit();
     expect(paginatorSpy).toHaveBeenCalled();
   });
@@ -70,7 +70,7 @@ describe('BookListComponent', () => {
   });
 
   it('should start filters', () => {
-    const startFilterSpy = spyOn(component, 'startFilter').and.callThrough();
+    const startFilterSpy = spyOn(component, 'startFilter');
     component.ngAfterViewInit();
     expect(startFilterSpy).toHaveBeenCalledWith(component.inputFilterAll);
   });
@@ -110,7 +110,7 @@ describe('BookListComponent', () => {
     spyOn(component.columns[0], 'cell');
     const data = component.dataSource.data;
     const idColumn = component.columns[0];
-    idColumn.cell({ id: '1' });
+    idColumn.cell({ id: 1, title: 'Test', author: { name: 'Test Author' } });
     component.columns.map(column => expect(isFunction(column.cell)).toBe(true));
     data.map(row => {
       expect(idColumn.cell(row)).toBe(`${row.id}`);
