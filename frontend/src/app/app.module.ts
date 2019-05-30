@@ -10,10 +10,11 @@ import { BookListComponent } from './books/book-list/book-list.component';
 import { MatTableModule } from '@angular/material/table';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { BookAddComponent } from './books/book-list/book-add/book-add.component';
 
 @NgModule({
   declarations: [
-    AppComponent, BookListComponent
+    AppComponent, BookListComponent, BookAddComponent
   ],
   imports: [
     AppRoutingModule, BrowserAnimationsModule, BrowserModule, HttpClientModule, SharedModule, FlexLayoutModule, FormsModule
