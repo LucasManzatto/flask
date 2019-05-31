@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Book } from '../../shared/models/book.model';
 import { Author } from '../../shared/models/author.model';
@@ -26,9 +26,9 @@ export class BookListComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('iptFilterAll') inputFilterAll;
-  totalPageElements: Number;
 
-
+  dataLength: number;
+  pageLength = 30;
   columns: ColumnModel[];
   displayedColumns: string[];
   filterId = '';
@@ -72,7 +72,7 @@ export class BookListComponent implements OnInit, AfterViewInit {
       .subscribe(res => {
         this.selection.clear();
         this.dataSource.data = res.items;
-        this.totalPageElements = res.total;
+        this.dataLength = res.total;
       });
   }
   startFilter(input: ElementRef) {
@@ -87,9 +87,9 @@ export class BookListComponent implements OnInit, AfterViewInit {
   }
 
   startPaginator() {
-    this.dataSource.paginator = this.paginator;
     this.paginator.page.pipe(
       tap(() => {
+        this.defaultParameters.page = (this.paginator.pageIndex + 1).toString();
         this.loadData();
       })
     ).subscribe();
@@ -134,8 +134,16 @@ export class BookListComponent implements OnInit, AfterViewInit {
       return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
     } else {
       return `${this.isAllSelected() ? 'select' : 'deselect'} all`;
-
     }
   }
+
+  // @HostListener('window:scroll', ['$event'])
+  // onscroll(event) {
+  //   const elem = event.currentTarget;
+  //   if ((elem.innerHeight + elem.pageYOffset + 200) >= document.body.offsetHeight && this.pageLength <= this.dataLength) {
+  //     this.pageLength += 30;
+  //     this.paginator._changePageSize(this.pageLength);
+  //   }
+  // }
 
 }
