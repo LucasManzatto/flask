@@ -8,7 +8,7 @@ import { BrowserModule, By, HAMMER_LOADER } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule } from '@angular/forms';
-import { isFunction } from 'lodash';
+import { isFunction, isEqual } from 'lodash';
 import { DEBOUNCE_TIME } from '../../shared/parameters';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { BookAddComponent } from './book-add/book-add.component';
@@ -55,13 +55,6 @@ describe('BookListComponent', () => {
     expect(component.paginator).toBeDefined();
   });
 
-
-
-  it('should have a sort', () => {
-    expect(component.sort).toBeDefined();
-    expect(component.dataSource.sort).toEqual(component.sort);
-  });
-
   describe('AfterViewInit', () => {
     it('should start paginator', () => {
       const paginatorSpy = spyOn(component, 'startPaginator');
@@ -78,10 +71,6 @@ describe('BookListComponent', () => {
       component.ngAfterViewInit();
       expect(startFilterSpy).toHaveBeenCalledWith(component.inputFilterAll);
     });
-  });
-
-  it('should instantiate the table paginator', () => {
-    expect(component.dataSource.paginator).toBe(component.paginator);
   });
 
   describe('should call loadData on', () => {
@@ -101,7 +90,7 @@ describe('BookListComponent', () => {
       expect(component.defaultParameters.query_all).toBe('test');
     });
     it('page change', () => {
-      const paginator = component.dataSource.paginator;
+      const paginator = component.paginator;
       if (paginator) {
         paginator.pageIndex = 1;
         paginator.page.emit();
@@ -146,7 +135,7 @@ describe('BookListComponent', () => {
 
   describe('initColumns', () => {
     const columns = ['id', 'title', 'author_name', 'series_title'];
-    const displayedColumns = ['select', 'id', 'title', 'author_name', 'series_title'];
+    const displayedColumns = ['select', 'id', 'title', 'author_name', 'series_title', 'actions'];
 
     beforeAll(() => {
       component.initColumns();
@@ -179,10 +168,44 @@ describe('BookListComponent', () => {
       component.openAddBookDialog();
     });
     it('should open the BookAddComponent', () => {
-      expect(dialogSpy).toHaveBeenCalledWith(BookAddComponent);
+      expect(dialogSpy).toHaveBeenCalledWith(BookAddComponent, { width: '50%' });
     });
     it('should call loadData when dialog closes', () => {
       expect(component.loadData).toHaveBeenCalled();
     });
+  });
+
+  describe('table', () => {
+    it('should have a sort', () => {
+      expect(component.sort).toBeDefined();
+      expect(component.dataSource.sort).toEqual(component.sort);
+    });
+    it('should toggle all and untoggle all', async(() => {
+      spyOn(component, 'masterToggle');
+      const checkBoxToggleAll = fixture.debugElement.nativeElement.querySelector('#toggle-all');
+      checkBoxToggleAll.click();
+      fixture.whenStable().then(() => {
+        expect(checkBoxToggleAll.checked).toBe(true);
+        expect(component.selection.selected.length).toEqual(component.dataSource.data.length);
+        expect(component.masterToggle).toHaveBeenCalled();
+
+        checkBoxToggleAll.click();
+
+        fixture.whenStable().then(() => {
+          expect(checkBoxToggleAll.checked).toBe(false);
+          expect(component.selection.selected.length).toEqual(0);
+        });
+      });
+    }));
+    // it('should change data when page changes', fakeAsync(() => {
+    //   const oldData = component.dataSource.data;
+    //   component.paginator.pageIndex++;
+    //   component.paginator.page.emit();
+    //   tick(DEBOUNCE_TIME);
+    //   fixture.whenStable().then(() => {
+    //     const newData = component.dataSource.data;
+    //     expect(isEqual(oldData, newData)).toBe(false);
+    //   });
+    // }));
   });
 });

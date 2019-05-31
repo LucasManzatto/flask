@@ -63,8 +63,7 @@ export class BookListComponent implements OnInit, AfterViewInit {
 
       }
     ];
-    this.displayedColumns = ['select'];
-    this.displayedColumns = this.displayedColumns.concat(this.columns.map(x => x.columnDef));
+    this.displayedColumns = ['select', ...this.columns.map(x => x.columnDef), 'actions'];
   }
 
   loadData() {
