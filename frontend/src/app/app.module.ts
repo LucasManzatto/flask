@@ -7,21 +7,33 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { SharedModule } from './shared/shared.module';
 import { BookListComponent } from './books/book-list/book-list.component';
-import { MatTableModule } from '@angular/material/table';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { BookAddComponent } from './books/book-list/book-add/book-add.component';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { RequestCache } from './shared/request.cache';
+import { CachingInterceptor } from './shared/http.interceptor';
 
 @NgModule({
   declarations: [
     AppComponent, BookListComponent, BookAddComponent
   ],
   imports: [
-    AppRoutingModule, BrowserAnimationsModule, BrowserModule, HttpClientModule, SharedModule, FlexLayoutModule, FormsModule
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    BrowserModule,
+    ScrollingModule,
+    HttpClientModule,
+    SharedModule,
+    FlexLayoutModule,
+    FormsModule
   ],
   entryComponents: [BookAddComponent],
   exports: [FlexLayoutModule],
-  providers: [],
+  providers: [
+    RequestCache,
+    { provide: HTTP_INTERCEPTORS, useClass: CachingInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
