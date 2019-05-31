@@ -55,7 +55,7 @@ def get_all_books(args):
     sort_query = utils.get_sort_query(args, Book)
     sub_queries = utils.get_query(Book, args)
     query_filter = Book.query.join(Author).options(joinedload('author')).filter(*sub_queries).order_by(
-        sort_query).paginate(page=0,
+        sort_query).paginate(page=page,
                              error_out=False,
                              max_per_page=10)
     return query_filter
