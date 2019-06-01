@@ -5,6 +5,7 @@ from backend.src.main import api
 
 base_args = {
     "page": webargs_fields.Str(missing=0),
+    "per_page": webargs_fields.Str(missing=10),
     "direction": webargs_fields.Str(missing='ASC'),
     "sort_column": webargs_fields.Str(missing='id'),
     "query_all": webargs_fields.Str(missing=''),
