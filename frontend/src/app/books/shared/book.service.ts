@@ -12,6 +12,7 @@ export class BookService {
   defaultQuery: DefaultQuery = {
     direction: 'ASC',
     page: '1',
+    per_page: '10',
     query_all: '',
     sort_column: 'id'
   };
@@ -25,6 +26,7 @@ export class BookService {
     return this.http.get<Query>(this.getAllBooksUrl, {
       params: {
         'page': defaultParameters.page,
+        'per_page': defaultParameters.per_page,
         'direction': defaultParameters.direction,
         'sort_column': defaultParameters.sort_column,
         'query_all': defaultParameters.query_all,

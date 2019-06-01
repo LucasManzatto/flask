@@ -20,6 +20,7 @@ describe('BookService', () => {
     const defaultQuery: DefaultQuery = {
         direction: 'ASC',
         page: '1',
+        per_page : '10',
         query_all: '',
         sort_column: 'id'
     };

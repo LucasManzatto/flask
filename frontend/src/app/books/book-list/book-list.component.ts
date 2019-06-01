@@ -88,6 +88,7 @@ export class BookListComponent implements OnInit, AfterViewInit {
   startPaginator() {
     this.paginator.page.pipe(
       tap(() => {
+        this.defaultParameters.per_page = this.paginator.pageSize.toString();
         this.defaultParameters.page = (this.paginator.pageIndex + 1).toString();
         this.loadData();
       })

@@ -16,6 +16,11 @@
   overflow: auto;
 }
 
+.selected-row{
+  background-color:rgba(103,58,183,0.8) !important;
+  color: white !important
+}
+
 body {
   font-family: 'Covered By Your Grace', cursive;
   line-height: 1.25;
