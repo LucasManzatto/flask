@@ -1,18 +1,37 @@
 <h1 fxLayoutAlign="center center" mat-dialog-title style='color:#551a8b'>Add Book</h1>
-<div mat-dialog-content>
+<form #f='ngForm' mat-dialog-content>
   <div fxLayout="column">
+    <!-- TITLE -->
     <mat-form-field>
-      <input type="text" matInput placeholder="Title">
+      <input name='title' required type="text" matInput placeholder="Title" [(ngModel)]="book.title">
     </mat-form-field>
+    <!-- AUTHOR FIELD -->
     <mat-form-field>
-      <input type="text" matInput placeholder="Author">
+      <input name='author' required type="text" (input)='authorChanged($event)' placeholder="Author" aria-label="Author"
+        matInput [formControl]="authorFormControl" [matAutocomplete]="authorAutocomplete">
+      <mat-autocomplete autoActiveFirstOption (optionSelected)='authorSelected($event.option.value)'
+        #authorAutocomplete="matAutocomplete" [displayWith]="authorDisplayFn">
+        <mat-option *ngFor="let option of filteredAuthors | async" [value]="option">
+          {{option.name}}
+        </mat-option>
+      </mat-autocomplete>
     </mat-form-field>
+    <!-- SERIES FIELD -->
     <mat-form-field>
-      <input type="text" matInput placeholder="Series">
+      <input name='series' required type="text" placeholder="Series" aria-label="Series" matInput [formControl]="seriesFormControl"
+        [matAutocomplete]="seriesAutoComplete">
+      <mat-autocomplete autoActiveFirstOption (optionSelected)='seriesSelected($event.option.value)'
+        #seriesAutoComplete="matAutocomplete" [displayWith]="seriesDisplayFn">
+        <mat-option *ngFor="let option of filteredSeries | async" [value]="option">
+          {{option.title}}
+        </mat-option>
+      </mat-autocomplete>
     </mat-form-field>
   </div>
-</div>
+</form>
+<!-- ACTIONS -->
 <div mat-dialog-actions fxLayoutAlign="center center" fxLayoutGap="50px">
-    <button id='cancel-button' mat-stroked-button color='error' mat-dialog-close>Cancel</button>
-  <button id='add-button' mat-flat-button color='primary'>Add Book</button>
+  <button id='cancel-button' mat-stroked-button color='error' mat-dialog-close>Cancel</button>
+  <button type='submit' id='add-button' [disabled]='f.invalid' mat-flat-button color='primary' (click)='addBook()'>Add
+    Book</button>
 </div>
