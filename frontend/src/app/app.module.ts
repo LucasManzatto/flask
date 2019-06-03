@@ -8,7 +8,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { SharedModule } from './shared/shared.module';
 import { BookListComponent } from './books/book-list/book-list.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BookAddComponent } from './books/book-list/book-add/book-add.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { RequestCache } from './shared/request.cache';
@@ -26,7 +26,8 @@ import { CachingInterceptor } from './shared/http.interceptor';
     HttpClientModule,
     SharedModule,
     FlexLayoutModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ],
   entryComponents: [BookAddComponent],
   exports: [FlexLayoutModule],

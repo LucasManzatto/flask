@@ -11,7 +11,8 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 const modules = [
     MatDialogModule,
@@ -26,7 +27,8 @@ const modules = [
     MatSortModule,
     MatButtonModule,
     MatCheckboxModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatAutocompleteModule
 ];
 @NgModule({
     declarations: [],
