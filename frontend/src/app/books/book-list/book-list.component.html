@@ -1,24 +1,22 @@
 <div fxLayoutAlign="center">
-  <div fxFlex=80 fxLayout='column' style='height: 87vh;overflow: hidden; margin-top:10px' fxLayoutAlign="space-between">
+  <div fxFlex=80 fxLayout='column' style='height: 81vh;overflow: hidden; margin-top:10px' fxLayoutAlign="space-between">
     <!-- SEARCH INPUT -->
     <mat-form-field fxFlex='10' style='width: 15%'>
       <input id='iptFilterAll' matInput #iptFilterAll [(ngModel)]='defaultParameters.query_all' placeholder="Filter">
     </mat-form-field>
     <!-- TABELA -->
-    <div fxFlex='70' style='margin-top: 10px;margin-bottom: 10px; overflow: auto;'>
+    <div fxFlex='70' style='overflow: auto;'>
       <mat-table class='mat-elevation-z2' [dataSource]="dataSource" style='width: 99%; margin:5px' matSort>
         <!-- TOGGLE COLUMN -->
         <ng-container matColumnDef="select">
           <mat-header-cell fxFlex='7' *matHeaderCellDef>
-            <mat-checkbox id='toggle-all' color='primary' (change)="$event ? masterToggle() : null"
-              [checked]="selection.hasValue() && isAllSelected()"
+            <mat-checkbox id='toggle-all' color='primary' (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
               [indeterminate]="selection.hasValue() && !isAllSelected()" [aria-label]="checkboxLabel()">
             </mat-checkbox>
           </mat-header-cell>
           <mat-cell fxFlex='7' *matCellDef="let row" [class.selected-row]='selection.isSelected(row)'>
-            <mat-checkbox color='primary' (click)="$event.stopPropagation()"
-              (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"
-              [aria-label]="checkboxLabel(row)">
+            <mat-checkbox color='primary' (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+              [checked]="selection.isSelected(row)" [aria-label]="checkboxLabel(row)">
             </mat-checkbox>
           </mat-cell>
         </ng-container>
@@ -27,12 +25,14 @@
         <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
           <ng-container *ngIf="column.header === 'ID'; else elseDefaultColumn">
             <mat-header-cell fxFlex='10' *matHeaderCellDef mat-sort-header> {{column.header}} </mat-header-cell>
-            <mat-cell *matCellDef="let element" [class.selected-row]='selection.isSelected(element)' fxFlex='10'  [attr.data-label]="column.header"> {{column.cell(element)}}
+            <mat-cell *matCellDef="let element" [class.selected-row]='selection.isSelected(element)' fxFlex='10'
+              [attr.data-label]="column.header"> {{column.cell(element)}}
             </mat-cell>
           </ng-container>
           <ng-template #elseDefaultColumn>
             <mat-header-cell *matHeaderCellDef mat-sort-header> {{column.header}} </mat-header-cell>
-            <mat-cell *matCellDef="let element" [class.selected-row]='selection.isSelected(element)' [attr.data-label]="column.header"> {{column.cell(element)}} </mat-cell>
+            <mat-cell *matCellDef="let element" [class.selected-row]='selection.isSelected(element)' [attr.data-label]="column.header">
+              {{column.cell(element)}} </mat-cell>
           </ng-template>
         </ng-container>
 
@@ -41,7 +41,7 @@
           <mat-header-cell fxFlex='10' *matHeaderCellDef> Actions </mat-header-cell>
           <mat-cell fxFlex='10' *matCellDef="let row" [class.selected-row]='selection.isSelected(row)'>
             <div fxLayoutAlign="space-between start">
-              <mat-icon fxFlex='10' aria-hidden="false" style='cursor: pointer;' matTooltip='Edit' color='accent'>edit
+              <mat-icon (click)='openAddBookDialog(true,row)' fxFlex='10' aria-hidden="false" style='cursor: pointer;' matTooltip='Edit' color='accent'>edit
               </mat-icon>
               <mat-icon fxFlex='10' aria-hidden="false" style='cursor: pointer;' matTooltip='Delete' color='warn'>delete
               </mat-icon>
@@ -55,7 +55,7 @@
     </div>
     <!-- FOOTER -->
     <div fxFlex='10' fxLayoutAlign="space-between end">
-      <button matTooltip="Add Book" (click)='openAddBookDialog()' id='add-button' style='margin:5px 5px 5px 12px'
+      <button matTooltip="Add Book" (click)='openAddBookDialog(false,undefined)' id='add-button' style='margin:5px 5px 5px 12px'
         mat-mini-fab color="primary">
         <mat-icon aria-hidden="false">add</mat-icon>
       </button>

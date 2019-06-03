@@ -165,7 +165,7 @@ describe('BookListComponent', () => {
     beforeEach(() => {
       dialogSpy = spyOn(TestBed.get(MatDialog), 'open').and.returnValue(dialogRefSpyObj);
       spyOn(component, 'loadData');
-      component.openAddBookDialog();
+      // component.openAddBookDialog(false,undefined);
     });
     it('should open the BookAddComponent', () => {
       expect(dialogSpy).toHaveBeenCalledWith(BookAddComponent, { width: '50%' });

@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, HostListener }
 import { MatTableDataSource } from '@angular/material/table';
 import { Book } from '../../shared/models/book.model';
 import { Author } from '../../shared/models/author.model';
-import { BookService } from '../shared/book.service';
+import { BookService } from '../../shared/services/book.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
@@ -67,7 +67,12 @@ export class BookListComponent implements OnInit, AfterViewInit {
   }
 
   loadData() {
-    this.bookService.getAll(this.defaultParameters, this.filterId, this.filterTitle, this.filterAuthor)
+    const queryParameters = {
+      'id': this.filterId,
+      'title': this.filterTitle,
+      'author_name': this.filterAuthor
+    };
+    this.bookService.getAllWithParameters(this.defaultParameters, queryParameters)
       .subscribe(res => {
         this.selection.clear();
         this.dataSource.data = res.items;
@@ -107,7 +112,11 @@ export class BookListComponent implements OnInit, AfterViewInit {
     });
   }
 
-  openAddBookDialog() {
+  openAddBookDialog(edit: boolean, row: Book) {
+    this.bookService.editing = edit;
+    if (row) {
+      this.bookService.currentItem = row;
+    }
     const dialogRef = this.dialog.open(BookAddComponent, { width: '50%' });
     dialogRef.afterClosed().subscribe(result => {
       this.loadData();
