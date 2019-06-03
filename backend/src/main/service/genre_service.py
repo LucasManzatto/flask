@@ -48,9 +48,11 @@ def update_existing_genre(data, books):
 
 def get_all_genres(args):
     page = args.pop('page', 0)
+    page_size = int(args.pop('per_page', 10))
     sort_query = utils.get_sort_query(args, Genre)
     sub_queries = utils.get_query(Genre, args)
-    query_filter = Genre.query.filter(*sub_queries).order_by(sort_query).paginate(page=page, error_out=False, max_per_page=10)
+    query_filter = Genre.query.filter(*sub_queries).order_by(sort_query).paginate(page=page, error_out=False,
+                                                                                  max_per_page=page_size)
     return query_filter
 
 

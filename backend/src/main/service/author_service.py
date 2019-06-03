@@ -47,9 +47,11 @@ def update_existing_author(data, series):
 
 def get_all_authors(args):
     page = args.pop('page', 0)
+    page_size = int(args.pop('per_page', 10))
     sort_query = utils.get_sort_query(args, Author)
     sub_queries = utils.get_query(Author, args)
-    query = Author.query.filter(*sub_queries).order_by(sort_query).paginate(page=page, error_out=False, max_per_page=10)
+    query = Author.query.filter(*sub_queries).order_by(sort_query).paginate(page=page, error_out=False,
+                                                                            max_per_page=page_size)
     return query
 
 

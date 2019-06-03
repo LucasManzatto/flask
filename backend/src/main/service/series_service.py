@@ -48,10 +48,11 @@ def update_series(books, data):
 
 def get_all_series(args):
     page = args.pop('page', 0)
+    page_size = int(args.pop('per_page', 10))
     sort_query = utils.get_sort_query(args, Series)
     sub_queries = utils.get_query(Series, args)
     query_filter = Series.query.filter(*sub_queries).order_by(sort_query).paginate(page=page, error_out=False,
-                                                                                   max_per_page=10)
+                                                                                   max_per_page=page_size)
     return query_filter
 
 
