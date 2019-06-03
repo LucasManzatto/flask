@@ -5,11 +5,11 @@ import {
     HttpTestingController
 } from '@angular/common/http/testing';
 import { DefaultQuery } from 'src/app/shared/models/query.model';
-import { Book } from '../../shared/models/book.model';
-import { Author } from '../../shared/models/author.model';
+import { Book } from '../models/book.model';
+import { Author } from '../models/author.model';
 import { HttpRequest } from '@angular/common/http';
 import { isEqual, sortBy } from 'lodash';
-import { Query } from '../../shared/models/query.model';
+import { Query } from '../models/query.model';
 
 describe('BookService', () => {
     // We declare the variables that we'll use for the Test Controller and for our Service
@@ -65,7 +65,7 @@ describe('BookService', () => {
     });
     it('returned Observable should match the right data', () => {
         const params = sortBy(['id', 'title', 'author_name'].concat(defaultParams));
-        service.getAll(defaultQuery).subscribe(res => {
+        service.getAllWithParameters(defaultQuery).subscribe(res => {
             expect(res.page).toEqual(query.page);
             expect(res.total).toBe(query.total);
             expect(res.items).toEqual(items);
@@ -85,7 +85,7 @@ describe('BookService', () => {
 
     it('should match when no parameters are passed on getAll()', () => {
         const params = sortBy(['id', 'title', 'author_name'].concat(defaultParams));
-        service.getAll().subscribe(res => {
+        service.getAllWithParameters().subscribe(res => {
             expect(res.page).toEqual(1);
             expect(res.total).toBe(2);
             expect(res.items).toEqual(items);
