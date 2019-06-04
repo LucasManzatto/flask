@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { BookService } from '../../../shared/services/book.service';
 import { Book } from '../../../shared/models/book.model';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup, FormArray, FormBuilder, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 import { Author } from '../../../shared/models/author.model';
 import { AuthorService } from '../../../shared/services/author.service';
 import { SeriesService } from '../../../shared/services/series.service';
 import { Series } from '../../../shared/models/series.model';
+import { controlNameBinding } from '@angular/forms/src/directives/reactive_directives/form_control_name';
 
 @Component({
   selector: 'app-book-add',
@@ -16,23 +17,40 @@ import { Series } from '../../../shared/models/series.model';
 })
 export class BookAddComponent implements OnInit {
 
-  authorFormControl = new FormControl();
-  seriesFormControl = new FormControl();
   book: Book;
   series: Series[] = [];
   filteredSeries: Observable<Series[]>;
   authors: Author[] = [];
   filteredAuthors: Observable<Author[]>;
+  form: FormGroup;
+
   constructor(private bookService: BookService,
     private authorService: AuthorService,
-    private seriesService: SeriesService) { }
+    private seriesService: SeriesService,
+    private formBuilder: FormBuilder) { }
 
   ngOnInit() {
+    this.initForm();
     this.book = this.initBook();
     this.getAuthors();
     if (this.bookService.editing) {
       this.book = this.bookService.currentItem;
     }
+  }
+
+  initForm() {
+    this.form = this.formBuilder.group({
+      title: ['', Validators.required],
+      author: ['', [Validators.required, this.validateAutocomplete]],
+      series: ['', this.validateAutocomplete]
+    });
+  }
+  validateAutocomplete(control: FormControl) {
+    return typeof control.value === 'string' && control.value !== '' ? {
+      validateAutocomplete: {
+        valid: false
+      }
+    } : null;
   }
 
   getSeries(authorId) {
@@ -49,10 +67,11 @@ export class BookAddComponent implements OnInit {
   }
 
   initFilteredOptionsAuthor() {
-    return this.authorFormControl.valueChanges
+    return this.form.valueChanges
       .pipe(
         startWith(''),
-        map((value: Author) => typeof value === 'string' ? value : value.name),
+        map((value: any) => value ? value.author : ''),
+        map((value: Author | string) => typeof value === 'string' ? value : value.name),
         map(name => name ? this._filterAuthor(name) : this.authors.slice())
       );
   }
@@ -64,13 +83,16 @@ export class BookAddComponent implements OnInit {
   }
 
   initFilteredOptionsSeries() {
-    return this.seriesFormControl.valueChanges
+    return this.form.valueChanges
       .pipe(
         startWith(''),
-        map((value: Series) => typeof value === 'string' ? value : value.title),
+        map((value: any) => value ? value.series : ''),
+        map((value: Series | string) => typeof value === 'string' ? value : value.title),
         map(title => title ? this._filterSeries(title) : this.series.slice())
       );
   }
+
+  displayFn = (object, prop): string | undefined => object ? object[prop] : undefined;
   seriesDisplayFn = (series?: Series): string | undefined => series ? series.title : undefined;
 
   private _filterSeries(title: string): Series[] {
@@ -82,11 +104,10 @@ export class BookAddComponent implements OnInit {
 
   }
 
-  authorChanged(author: Author) {
-    console.log(author);
-    // if (typeof (author) === 'string') {
+  authorChanged(author: Author, form) {
+    if (typeof (author) === 'string') {
 
-    // }
+    }
   }
 
   authorSelected(author: Author) {
