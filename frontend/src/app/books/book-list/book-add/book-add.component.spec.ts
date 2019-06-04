@@ -47,55 +47,77 @@ fdescribe('BookAddComponent', () => {
     }).compileComponents();
   }));
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [BookService, { provide: AuthorService, useClass: AuthorServiceStub },
-      ],
-      imports: [HttpClientTestingModule]
-    });
-
-    service = TestBed.get(BookService);
-    fixture = TestBed.createComponent(BookAddComponent);
-    authorService = fixture.debugElement.injector.get(AuthorService);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-  fit('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  fdescribe('ngOnInit()', () => {
+  describe('unit tests', () => {
     beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [BookService, { provide: AuthorService, useClass: AuthorServiceStub },
+        ],
+        imports: [HttpClientTestingModule]
+      });
+
+      service = TestBed.get(BookService);
+      fixture = TestBed.createComponent(BookAddComponent);
+      authorService = fixture.debugElement.injector.get(AuthorService);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
     });
-    fit('should initialize form', () => {
-      spyOn(component, 'initForm');
-      component.ngOnInit();
-      expect(component.initForm).toHaveBeenCalled();
-    });
-    fit('should initialize book', () => {
-      spyOn(component, 'initBook');
-      component.ngOnInit();
-      expect(component.initBook).toHaveBeenCalled();
+    fit('should create', () => {
+      expect(component).toBeTruthy();
     });
 
-    fit('should call getAuthors() and initialize authors array', () => {
-      spyOn(authorService, 'getAll').and.callThrough();
-      component.ngOnInit();
-      fixture.whenStable().then(() => {
-        expect(component.authors).toEqual(authorService.authorsArrayMock);
-        expect(authorService.getAll).toHaveBeenCalled();
+    fdescribe('ngOnInit()', () => {
+      beforeEach(() => {
+      });
+      fit('should initialize form', () => {
+        spyOn(component, 'initForm');
+        component.ngOnInit();
+        expect(component.initForm).toHaveBeenCalled();
+      });
+      fit('should initialize book', () => {
+        spyOn(component, 'initBook');
+        component.ngOnInit();
+        expect(component.initBook).toHaveBeenCalled();
+      });
+
+      fit('should call getAuthors() and initialize authors array', () => {
+        spyOn(authorService, 'getAll').and.callThrough();
+        component.ngOnInit();
+        fixture.whenStable().then(() => {
+          expect(component.authors).toEqual(authorService.authorsArrayMock);
+          expect(authorService.getAll).toHaveBeenCalled();
+        });
+      });
+
+      fit('should set the book the same as the service book if is editing', () => {
+        service.currentItem = { title: 'Test', author: { name: 'Test Author' } };
+        service.editing = true;
+        component.ngOnInit();
+        expect(component.book).toEqual(service.currentItem);
       });
     });
 
-    fit('should set the book the same as the service book if is', () => {
-      service.currentItem = { title: 'Test', author: { name: 'Test Author' } };
-      service.editing = true;
+    fit('should change filteredAuthors when form changes', () => {
+      spyOn(authorService, 'getAll').and.callThrough();
       component.ngOnInit();
-      expect(component.book).toEqual(service.currentItem);
+      fixture.whenStable().then(() => {
+        component.form.patchValue({ author: 'Author 2' });
+        component.filteredAuthors.subscribe(res => {
+          console.log(res);
+        })
+      });
     });
+
+    describe('getSeries()', () => {
+      fit('should populate the series array', () => {
+        spyOn(authorService, 'getSeries').and.callThrough();
+        component.getSeries(1);
+        fixture.whenStable().then(() => {
+          expect(component.series).toEqual(authorService.seriesArrayMock);
+          expect(authorService.getSeries).toHaveBeenCalled();
+        });
+      });
+    });
+
   });
 
-
-  fit('getSeries() should populate the series array when an author is selected', fakeAsync(() => {
-  }));
 });
