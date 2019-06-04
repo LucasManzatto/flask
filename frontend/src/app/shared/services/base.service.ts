@@ -15,7 +15,7 @@ export abstract class BaseService<T> {
     this.baseUrl = `${API}/${endpoint}/`;
   }
 
-  public getOne(id: string): Observable<T> {
+  public getOne(id: string | number): Observable<T> {
     return this.http.get<T>(this.baseUrl + id);
   }
 
@@ -23,15 +23,17 @@ export abstract class BaseService<T> {
     return this.http.get<Query>(this.baseUrl, { headers: { 'X-Fields': mask } });
   }
   public getAllWithParameters(defaultParameters = DEFAULT_PARAMETERS, queryParameters) {
+    const params = {
+      'page': defaultParameters.page,
+      'per_page': defaultParameters.per_page,
+      'direction': defaultParameters.direction,
+      'sort_column': defaultParameters.sort_column,
+      'query_all': defaultParameters.query_all,
+      ...queryParameters
+    };
+    console.log(params)
     return this.http.get<Query>(this.baseUrl, {
-      params: {
-        'page': defaultParameters.page,
-        'per_page': defaultParameters.per_page,
-        'direction': defaultParameters.direction,
-        'sort_column': defaultParameters.sort_column,
-        'query_all': defaultParameters.query_all,
-        ...queryParameters
-      }
+      params
     });
   }
 
