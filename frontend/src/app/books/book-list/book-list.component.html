@@ -41,7 +41,8 @@
           <mat-header-cell fxFlex='10' *matHeaderCellDef> Actions </mat-header-cell>
           <mat-cell fxFlex='10' *matCellDef="let row" [class.selected-row]='selection.isSelected(row)'>
             <div fxLayoutAlign="space-between start">
-              <mat-icon (click)='openAddBookDialog(true,row)' fxFlex='10' aria-hidden="false" style='cursor: pointer;' matTooltip='Edit' color='accent'>edit
+              <mat-icon (click)='openAddBookDialog(true,row)' fxFlex='10' aria-hidden="false" style='cursor: pointer;'
+                matTooltip='Edit' color='accent'>edit
               </mat-icon>
               <mat-icon fxFlex='10' aria-hidden="false" style='cursor: pointer;' matTooltip='Delete' color='warn'>delete
               </mat-icon>
@@ -55,7 +56,7 @@
     </div>
     <!-- FOOTER -->
     <div fxFlex='10' fxLayoutAlign="space-between end">
-      <button matTooltip="Add Book" (click)='openAddBookDialog(false,undefined)' id='add-button' style='margin:5px 5px 5px 12px'
+      <button matTooltip="Add Book" (click)='openAddBookDialog(false)' id='add-button' style='margin:5px 5px 5px 12px'
         mat-mini-fab color="primary">
         <mat-icon aria-hidden="false">add</mat-icon>
       </button>

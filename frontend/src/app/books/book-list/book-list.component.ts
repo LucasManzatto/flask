@@ -112,7 +112,7 @@ export class BookListComponent implements OnInit, AfterViewInit {
     });
   }
 
-  openAddBookDialog(edit: boolean, row: Book) {
+  openAddBookDialog(edit: boolean, row?) {
     this.bookService.editing = edit;
     if (row) {
       this.bookService.currentItem = row;

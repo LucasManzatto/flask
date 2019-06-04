@@ -7,13 +7,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule, By, HAMMER_LOADER } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { isFunction, isEqual } from 'lodash';
 import { DEBOUNCE_TIME } from '../../shared/parameters';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { BookAddComponent } from './book-add/book-add.component';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { of } from 'rxjs';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 describe('BookListComponent', () => {
   let component: BookListComponent;
@@ -21,8 +22,15 @@ describe('BookListComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [AppRoutingModule, BrowserAnimationsModule,
-        BrowserModule, HttpClientModule, SharedModule, FlexLayoutModule, FormsModule
+      imports: [AppRoutingModule,
+        BrowserAnimationsModule,
+        BrowserModule,
+        ScrollingModule,
+        HttpClientModule,
+        SharedModule,
+        FlexLayoutModule,
+        FormsModule,
+        ReactiveFormsModule
       ],
       declarations: [BookListComponent, BookAddComponent],
       providers: [
@@ -165,7 +173,7 @@ describe('BookListComponent', () => {
     beforeEach(() => {
       dialogSpy = spyOn(TestBed.get(MatDialog), 'open').and.returnValue(dialogRefSpyObj);
       spyOn(component, 'loadData');
-      // component.openAddBookDialog(false,undefined);
+      component.openAddBookDialog(false);
     });
     it('should open the BookAddComponent', () => {
       expect(dialogSpy).toHaveBeenCalledWith(BookAddComponent, { width: '50%' });
@@ -197,15 +205,15 @@ describe('BookListComponent', () => {
         });
       });
     }));
-    // it('should change data when page changes', fakeAsync(() => {
-    //   const oldData = component.dataSource.data;
-    //   component.paginator.pageIndex++;
-    //   component.paginator.page.emit();
-    //   tick(DEBOUNCE_TIME);
-    //   fixture.whenStable().then(() => {
-    //     const newData = component.dataSource.data;
-    //     expect(isEqual(oldData, newData)).toBe(false);
-    //   });
-    // }));
+    it('should change data when page changes', fakeAsync(() => {
+      const oldData = component.dataSource.data;
+      component.paginator.pageIndex++;
+      component.paginator.page.emit();
+      tick(DEBOUNCE_TIME);
+      fixture.whenStable().then(() => {
+        const newData = component.dataSource.data;
+        expect(isEqual(oldData, newData)).toBe(false);
+      });
+    }));
   });
 });
