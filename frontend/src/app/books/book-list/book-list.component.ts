@@ -112,7 +112,7 @@ export class BookListComponent implements OnInit, AfterViewInit {
     });
   }
 
-  openAddBookDialog(edit: boolean, row?) {
+  openAddBookDialog(edit: boolean, row?: Book | undefined) {
     this.bookService.editing = edit;
     if (row) {
       this.bookService.currentItem = row;
@@ -122,6 +122,8 @@ export class BookListComponent implements OnInit, AfterViewInit {
       this.loadData();
     });
   }
+
+  getId = index => `edit-button${index}`;
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
@@ -135,15 +137,6 @@ export class BookListComponent implements OnInit, AfterViewInit {
     this.isAllSelected() ?
       this.selection.clear() :
       this.dataSource.data.forEach(row => this.selection.select(row));
-  }
-
-  /** The label for the checkbox on the passed row */
-  checkboxLabel(row?: Book): string {
-    if (row && row.id) {
-      return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
-    } else {
-      return `${this.isAllSelected() ? 'select' : 'deselect'} all`;
-    }
   }
 
   // @HostListener('window:scroll', ['$event'])

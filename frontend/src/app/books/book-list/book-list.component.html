@@ -11,12 +11,12 @@
         <ng-container matColumnDef="select">
           <mat-header-cell fxFlex='7' *matHeaderCellDef>
             <mat-checkbox id='toggle-all' color='primary' (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
-              [indeterminate]="selection.hasValue() && !isAllSelected()" [aria-label]="checkboxLabel()">
+              [indeterminate]="selection.hasValue() && !isAllSelected()">
             </mat-checkbox>
           </mat-header-cell>
           <mat-cell fxFlex='7' *matCellDef="let row" [class.selected-row]='selection.isSelected(row)'>
             <mat-checkbox color='primary' (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
-              [checked]="selection.isSelected(row)" [aria-label]="checkboxLabel(row)">
+              [checked]="selection.isSelected(row)">
             </mat-checkbox>
           </mat-cell>
         </ng-container>
@@ -39,10 +39,10 @@
         <!-- ACTIONS COLUMN -->
         <ng-container matColumnDef='actions'>
           <mat-header-cell fxFlex='10' *matHeaderCellDef> Actions </mat-header-cell>
-          <mat-cell fxFlex='10' *matCellDef="let row" [class.selected-row]='selection.isSelected(row)'>
+          <mat-cell fxFlex='10' *matCellDef="let row; let i = index" [class.selected-row]='selection.isSelected(row)'>
             <div fxLayoutAlign="space-between start">
-              <mat-icon (click)='openAddBookDialog(true,row)' fxFlex='10' aria-hidden="false" style='cursor: pointer;'
-                matTooltip='Edit' color='accent'>edit
+              <mat-icon (click)='openAddBookDialog(true,row)' [id]="'edit-button' + i" fxFlex='10' aria-hidden="false"
+                style='cursor: pointer;' matTooltip='Edit' color='accent'>edit
               </mat-icon>
               <mat-icon fxFlex='10' aria-hidden="false" style='cursor: pointer;' matTooltip='Delete' color='warn'>delete
               </mat-icon>
@@ -60,7 +60,7 @@
         mat-mini-fab color="primary">
         <mat-icon aria-hidden="false">add</mat-icon>
       </button>
-      <mat-paginator [pageSizeOptions]="[10, 20, 30]" showFirstLastButtons [length]='dataLength'></mat-paginator>
+      <mat-paginator id='paginator' [pageSizeOptions]="[10, 20, 30]" showFirstLastButtons [length]='dataLength'></mat-paginator>
     </div>
   </div>
 </div>

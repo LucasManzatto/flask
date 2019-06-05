@@ -1,109 +1,109 @@
-import { TestBed } from '@angular/core/testing';
-import { BookService } from './book.service';
-import {
-    HttpClientTestingModule,
-    HttpTestingController
-} from '@angular/common/http/testing';
-import { DefaultQuery } from 'src/app/shared/models/query.model';
-import { Book } from '../models/book.model';
-import { Author } from '../models/author.model';
-import { HttpRequest } from '@angular/common/http';
-import { isEqual, sortBy } from 'lodash';
-import { Query } from '../models/query.model';
-import { DEFAULT_PARAMETERS_KEYS, DEFAULT_PARAMETERS } from '../parameters';
+// import { TestBed } from '@angular/core/testing';
+// import { BookService } from './book.service';
+// import {
+//     HttpClientTestingModule,
+//     HttpTestingController
+// } from '@angular/common/http/testing';
+// import { DefaultQuery } from 'src/app/shared/models/query.model';
+// import { Book } from '../models/book.model';
+// import { Author } from '../models/author.model';
+// import { HttpRequest } from '@angular/common/http';
+// import { isEqual, sortBy } from 'lodash';
+// import { Query } from '../models/query.model';
+// import { DEFAULT_PARAMETERS_KEYS, DEFAULT_PARAMETERS } from '../parameters';
 
-describe('BookService', () => {
-    // We declare the variables that we'll use for the Test Controller and for our Service
-    let backend: HttpTestingController;
-    let service: BookService;
+// describe('BookService', () => {
+//     // We declare the variables that we'll use for the Test Controller and for our Service
+//     let backend: HttpTestingController;
+//     let service: BookService;
 
-    const defaultParams = DEFAULT_PARAMETERS_KEYS;
-    const bookQueryParams = ['id', 'title', 'author_name'];
-    const allQueryParams = sortBy(bookQueryParams.concat(defaultParams));
-    const defaultQuery = DEFAULT_PARAMETERS;
-    const items: Book[] = [{
-        id: 1,
-        title: 'Test 1',
-        author: {
-            name: 'Author 1'
-        }
-    },
-    {
-        id: 2,
-        title: 'Test 2',
-        author: {
-            name: 'Author 2'
-        }
-    }];
-    const query: Query = {
-        items,
-        page: 1,
-        per_page: 10,
-        total: items.length
-    };
+//     const defaultParams = DEFAULT_PARAMETERS_KEYS;
+//     const bookQueryParams = ['id', 'title', 'author_name'];
+//     const allQueryParams = sortBy(bookQueryParams.concat(defaultParams));
+//     const defaultQuery = DEFAULT_PARAMETERS;
+//     const items: Book[] = [{
+//         id: 1,
+//         title: 'Test 1',
+//         author: {
+//             name: 'Author 1'
+//         }
+//     },
+//     {
+//         id: 2,
+//         title: 'Test 2',
+//         author: {
+//             name: 'Author 2'
+//         }
+//     }];
+//     const query: Query = {
+//         items,
+//         page: 1,
+//         per_page: 10,
+//         total: items.length
+//     };
 
-    beforeEach(() => {
-        TestBed.configureTestingModule({
-            providers: [BookService],
-            imports: [HttpClientTestingModule]
-        });
+//     beforeEach(() => {
+//         TestBed.configureTestingModule({
+//             providers: [BookService],
+//             imports: [HttpClientTestingModule]
+//         });
 
-        // We inject our service (which imports the HttpClient) and the Test Controller
-        backend = TestBed.get(HttpTestingController);
-        service = TestBed.get(BookService);
-    });
+//         // We inject our service (which imports the HttpClient) and the Test Controller
+//         backend = TestBed.get(HttpTestingController);
+//         service = TestBed.get(BookService);
+//     });
 
-    afterEach(() => {
-        backend.verify();
-    });
+//     afterEach(() => {
+//         backend.verify();
+//     });
 
-    it('should be created', () => {
-        expect(service).toBeTruthy();
-    });
-    it('returned Observable should match the right data', () => {
-        service.getAllWithParameters(defaultParams, query).subscribe(res => {
-            expect(res.page).toEqual(query.page);
-            expect(res.total).toBe(query.total);
-            expect(res.items).toEqual(items);
-        });
+//     it('should be created', () => {
+//         expect(service).toBeTruthy();
+//     });
+//     it('returned Observable should match the right data', () => {
+//         service.getAllWithParameters(defaultParams, query).subscribe(res => {
+//             expect(res.page).toEqual(query.page);
+//             expect(res.total).toBe(query.total);
+//             expect(res.items).toEqual(items);
+//         });
 
-        const testRequest = backend.match((request: HttpRequest<any>) => {
-            return request.url === service.baseUrl &&
-                request.method === 'GET' &&
-                isEqual(sortBy(request.params.keys()), allQueryParams) &&
-                request.params.get('direction') === defaultQuery.direction &&
-                request.params.get('page') === defaultQuery.page &&
-                request.params.get('sort_column') === defaultQuery.sort_column &&
-                request.params.get('query_all') === defaultQuery.query_all &&
-                request.params.get('per_page') === defaultQuery.per_page &&
-                request.responseType === 'json';
-        });
-    });
+//         const testRequest = backend.match((request: HttpRequest<any>) => {
+//             return request.url === service.baseUrl &&
+//                 request.method === 'GET' &&
+//                 isEqual(sortBy(request.params.keys()), allQueryParams) &&
+//                 request.params.get('direction') === defaultQuery.direction &&
+//                 request.params.get('page') === defaultQuery.page &&
+//                 request.params.get('sort_column') === defaultQuery.sort_column &&
+//                 request.params.get('query_all') === defaultQuery.query_all &&
+//                 request.params.get('per_page') === defaultQuery.per_page &&
+//                 request.responseType === 'json';
+//         });
+//     });
 
-    it('should match when no parameters are passed on getAll()', () => {
-        service.getAllWithParameters(defaultParams, defaultQuery).subscribe(res => {
-            expect(res.page).toEqual(1);
-            expect(res.total).toBe(2);
-            expect(res.items).toEqual(items);
-        });
-        backend.match(request => {
-            return request.url === (service.baseUrl) &&
-                request.method === 'GET' &&
-                isEqual(sortBy(request.params.keys()), allQueryParams);
-        })[0].flush(query);
-    });
+//     it('should match when no parameters are passed on getAll()', () => {
+//         service.getAllWithParameters(defaultParams, defaultQuery).subscribe(res => {
+//             expect(res.page).toEqual(1);
+//             expect(res.total).toBe(2);
+//             expect(res.items).toEqual(items);
+//         });
+//         backend.match(request => {
+//             return request.url === (service.baseUrl) &&
+//                 request.method === 'GET' &&
+//                 isEqual(sortBy(request.params.keys()), allQueryParams);
+//         })[0].flush(query);
+//     });
 
 
-    it('should return book from getBook()', () => {
-        const book = items[0];
-        service.getOne(book.id ? book.id : '0').subscribe(res => {
-            expect(res).toEqual(book);
-        });
-        backend.expectOne(service.baseUrl + book.id).flush(book);
-    });
+//     it('should return book from getBook()', () => {
+//         const book = items[0];
+//         service.getOne(book.id ? book.id : '0').subscribe(res => {
+//             expect(res).toEqual(book);
+//         });
+//         backend.expectOne(service.baseUrl + book.id).flush(book);
+//     });
 
-    it('should return not found from getBook()', () => {
-        service.getOne(-1).subscribe();
-        backend.expectOne(service.baseUrl + '-1');
-    });
-});
+//     it('should return not found from getBook()', () => {
+//         service.getOne(-1).subscribe();
+//         backend.expectOne(service.baseUrl + '-1');
+//     });
+// });

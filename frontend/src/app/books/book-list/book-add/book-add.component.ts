@@ -91,7 +91,6 @@ export class BookAddComponent implements OnInit {
   }
 
   authorSelected(author: Author) {
-    console.log(author);
     this.book.author = author;
     this.getSeries(author.id);
   }

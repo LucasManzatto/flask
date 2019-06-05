@@ -34,6 +34,7 @@ describe('BookAddComponent', () => {
         ReactiveFormsModule],
       declarations: [BookAddComponent],
       providers: [
+        BookService,
         {
           provide: MatDialogRef, useValue: {
             close: () => { }
@@ -51,12 +52,6 @@ describe('BookAddComponent', () => {
 
   describe('unit tests', () => {
     beforeEach(() => {
-      TestBed.configureTestingModule({
-        providers: [BookService, { provide: AuthorService, useClass: AuthorServiceStub }
-        ],
-        imports: [HttpClientTestingModule]
-      });
-
       service = TestBed.get(BookService);
       fixture = TestBed.createComponent(BookAddComponent);
       authorService = fixture.debugElement.injector.get(AuthorService);
@@ -143,9 +138,11 @@ describe('BookAddComponent', () => {
 
       describe('on series change', () => {
         let mock;
-        beforeAll(() => {
+        beforeEach(() => {
+          spyOn(authorService, 'getSeries').and.callThrough();
           component.series = authorService.seriesArrayMock;
           mock = { series: component.series[0] };
+          component.getSeries(component.series[0].id);
         });
         describe('valid input', () => {
           afterEach(() => {

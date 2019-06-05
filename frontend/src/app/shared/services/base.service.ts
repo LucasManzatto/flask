@@ -31,7 +31,6 @@ export abstract class BaseService<T> {
       'query_all': defaultParameters.query_all,
       ...queryParameters
     };
-    console.log(params)
     return this.http.get<Query>(this.baseUrl, {
       params
     });
