@@ -18,8 +18,7 @@
   <!-- SERIES FIELD -->
   <mat-form-field>
     <input formControlName='series' type="text" placeholder="Series" aria-label="Series" matInput [matAutocomplete]="seriesAutoComplete">
-    <mat-autocomplete required autoActiveFirstOption (optionSelected)='seriesSelected($event.option.value)'
-      #seriesAutoComplete="matAutocomplete" [displayWith]="seriesDisplayFn">
+    <mat-autocomplete required autoActiveFirstOption #seriesAutoComplete="matAutocomplete" [displayWith]="seriesDisplayFn">
       <mat-option *ngFor="let option of filteredSeries | async" [value]="option">
         {{option.title}}
       </mat-option>

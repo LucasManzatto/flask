@@ -9,6 +9,7 @@ import { AuthorService } from '../../../shared/services/author.service';
 import { SeriesService } from '../../../shared/services/series.service';
 import { Series } from '../../../shared/models/series.model';
 import { controlNameBinding } from '@angular/forms/src/directives/reactive_directives/form_control_name';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-book-add',
@@ -27,7 +28,8 @@ export class BookAddComponent implements OnInit {
   constructor(private bookService: BookService,
     private authorService: AuthorService,
     private seriesService: SeriesService,
-    private formBuilder: FormBuilder) { }
+    private formBuilder: FormBuilder,
+    public dialogRef: MatDialogRef<BookAddComponent>) { }
 
   ngOnInit() {
     this.initForm();
@@ -56,66 +58,42 @@ export class BookAddComponent implements OnInit {
   getSeries(authorId) {
     this.authorService.getSeries(authorId).subscribe(res => {
       this.series = res;
-      this.filteredSeries = this.initFilteredOptionsSeries();
+      this.filteredSeries = this.initFilteredOptions(this.series, 'series', 'title');
     });
   }
   getAuthors() {
     this.authorService.getAll('{items{id,name}}').subscribe(res => {
       this.authors = res.items;
-      this.filteredAuthors = this.initFilteredOptionsAuthor();
+      this.filteredAuthors = this.initFilteredOptions(this.authors, 'author', 'name');
     });
   }
 
-  initFilteredOptionsAuthor() {
-    return this.form.valueChanges
+  initFilteredOptions(arrayToFilter: any[], control: string, propToFilter: string) {
+    return this.form.controls[control].valueChanges
       .pipe(
         startWith(''),
-        map((value: any) => value ? value.author : ''),
-        map((value: Author | string) => typeof value === 'string' ? value : value.name),
-        map(name => name ? this._filterAuthor(name) : this.authors.slice())
+        map(() => this._filterArray(arrayToFilter, this.form.get(control), propToFilter)),
       );
   }
+  private _filterArray(array: any[], formControl: any, property: string): any[] {
+    const element = formControl.value;
+    const filterValue = (typeof element === 'string' ? element : element[property]).toLowerCase();
+    return array.filter(option => option[property].toLowerCase().indexOf(filterValue) === 0);
+  }
+
   authorDisplayFn = (author?: Author): string | undefined => author ? author.name : undefined;
 
-  private _filterAuthor(name: string): Author[] {
-    const filterValue = name.toLowerCase();
-    return this.authors.filter(option => option.name.toLowerCase().indexOf(filterValue) === 0);
-  }
-
-  initFilteredOptionsSeries() {
-    return this.form.valueChanges
-      .pipe(
-        startWith(''),
-        map((value: any) => value ? value.series : ''),
-        map((value: Series | string) => typeof value === 'string' ? value : value.title),
-        map(title => title ? this._filterSeries(title) : this.series.slice())
-      );
-  }
-
-  displayFn = (object, prop): string | undefined => object ? object[prop] : undefined;
   seriesDisplayFn = (series?: Series): string | undefined => series ? series.title : undefined;
 
-  private _filterSeries(title: string): Series[] {
-    const filterValue = title.toLowerCase();
-    return this.series.filter(option => option.title.toLowerCase().indexOf(filterValue) === 0);
-  }
-
   addBook() {
-
-  }
-
-  authorChanged(author: Author, form) {
-    if (typeof (author) === 'string') {
-
-    }
+    this.book = { title: this.form.value['title'], author: this.form.value['author'], series: this.form.value['series'] };
+    this.dialogRef.close();
   }
 
   authorSelected(author: Author) {
+    console.log(author);
     this.book.author = author;
     this.getSeries(author.id);
-  }
-  seriesSelected(series: Series) {
-    this.book.series = series;
   }
 
   initBook(): Book {
