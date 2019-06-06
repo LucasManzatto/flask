@@ -123,8 +123,6 @@ export class BookListComponent implements OnInit, AfterViewInit {
     });
   }
 
-  getId = index => `edit-button${index}`;
-
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
@@ -138,14 +136,5 @@ export class BookListComponent implements OnInit, AfterViewInit {
       this.selection.clear() :
       this.dataSource.data.forEach(row => this.selection.select(row));
   }
-
-  // @HostListener('window:scroll', ['$event'])
-  // onscroll(event) {
-  //   const elem = event.currentTarget;
-  //   if ((elem.innerHeight + elem.pageYOffset + 200) >= document.body.offsetHeight && this.pageLength <= this.dataLength) {
-  //     this.pageLength += 30;
-  //     this.paginator._changePageSize(this.pageLength);
-  //   }
-  // }
 
 }
