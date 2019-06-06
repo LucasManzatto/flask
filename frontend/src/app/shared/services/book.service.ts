@@ -10,7 +10,7 @@ import { asyncData, createQuery } from '../utils';
 export class BookService extends BaseService<Book> {
 
   booksArrayMock: Book[] = [{ id: 1, title: 'Book 1', author: { name: 'Author 1' } },
-  { id: 2, title: 'Book 2', author: { name: 'Author 2' } }];
+  { id: 2, title: 'Book 2', author: { name: 'Author 2' }, series: { title: 'Series 1' } }];
   constructor(http: HttpClient) {
     super(http, 'books');
   }
