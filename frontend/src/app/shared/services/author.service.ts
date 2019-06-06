@@ -12,14 +12,16 @@ import { asyncData, createQuery } from '../utils';
 export class AuthorService extends BaseService<Author> {
 
   authorsArrayMock: Author[] = [{ id: 1, name: 'Author 1' }, { id: 2, name: 'Author 2' }];
-  seriesArrayMock: Series[] = [{ id: 1, title: 'Series 1' }, { id: 2, title: 'Series 2' }]
+  seriesArrayMock: Series[] = [{ id: 1, title: 'Series 1' }, { id: 2, title: 'Series 2' }];
+
+  getSeriesUrl = id => `${this.baseUrl}${id}/series`;
 
   constructor(http: HttpClient) {
     super(http, 'authors');
   }
 
   getSeries(id: number): Observable<Series[]> {
-    return this.http.get<Series[]>(`${this.baseUrl}${id}/series`);
+    return this.http.get<Series[]>(this.getSeriesUrl(id));
   }
 }
 
@@ -27,7 +29,7 @@ export class AuthorServiceStub extends AuthorService {
   getAll() {
     return asyncData(createQuery(this.authorsArrayMock));
   }
-  getSeries() {
+  getSeries(id: number) {
     return asyncData(this.seriesArrayMock);
   }
 }
