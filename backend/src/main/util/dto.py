@@ -81,7 +81,7 @@ class BookDTO:
 
     book_create = api.clone('Book_Update', book_base, {
         'genre_ids': fields.List(fields.Integer(required=False)),
-        'author_id': fields.Integer(required=False, description="The book's author."),
+        'author_id': fields.Integer(required=True, description="The book's author."),
         'series_id': fields.Integer(required=False, description="The book's series.")
     })
 
