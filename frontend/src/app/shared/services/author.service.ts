@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BaseService } from './base.service';
-import { Author } from '../models/author.model';
+import { Author, AuthorDTO } from '../models/author.model';
 import { Observable } from 'rxjs';
 import { Series } from '../models/series.model';
 import { asyncData, createQuery } from '../utils';
@@ -9,7 +9,7 @@ import { asyncData, createQuery } from '../utils';
 @Injectable({
   providedIn: 'root',
 })
-export class AuthorService extends BaseService<Author> {
+export class AuthorService extends BaseService<Author, AuthorDTO> {
 
   authorsArrayMock: Author[] = [{ id: 1, name: 'Author 1' }, { id: 2, name: 'Author 2' }];
   seriesArrayMock: Series[] = [{ id: 1, title: 'Series 1' }, { id: 2, title: 'Series 2' }];

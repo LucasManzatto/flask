@@ -7,3 +7,10 @@ export interface Author {
     books?: Book[];
     series?: Series[];
 }
+
+export interface AuthorDTO {
+    id?: number;
+    name: string;
+    books_ids?: number[];
+    series_ids?: number[];
+}

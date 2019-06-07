@@ -8,3 +8,11 @@ export interface Series {
     books?: Book[];
     authors?: Author[];
 }
+
+export interface SeriesDTO {
+    id?: number;
+    title: string;
+    description?: string;
+    books_ids?: number[];
+    authors_ids?: number[];
+}

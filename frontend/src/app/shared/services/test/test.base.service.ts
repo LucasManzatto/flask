@@ -7,7 +7,7 @@ import { Test } from '../../models/test.model';
   providedIn: 'root',
 })
 
-export class TestService extends BaseService<Test> {
+export class TestService extends BaseService<Test, Test> {
 
   constructor(http: HttpClient) {
     super(http, 'test');

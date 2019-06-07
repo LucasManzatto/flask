@@ -4,7 +4,7 @@ import { API } from 'src/app/shared/api';
 import { DEFAULT_PARAMETERS } from 'src/app/shared/parameters';
 import { Observable } from 'rxjs';
 
-export abstract class BaseService<T> {
+export abstract class BaseService<T, V> {
 
   currentItem: T;
   editing: boolean;
@@ -36,15 +36,15 @@ export abstract class BaseService<T> {
     });
   }
 
-  public post(item: T): void {
-    this.http.post(this.baseUrl, item);
+  public post(item: V): Observable<any> {
+    return this.http.post(this.baseUrl, item);
   }
 
-  public put(item: T): void {
-    this.http.put(this.baseUrl, item);
+  public put(item: V): Observable<any> {
+    return this.http.put(this.baseUrl, item);
   }
 
-  public delete(id: number): void {
-    this.http.delete(this.baseUrl + id);
+  public delete(id: number): Observable<any> {
+    return this.http.delete(this.baseUrl + id);
   }
 }
