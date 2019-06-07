@@ -4,6 +4,12 @@
   <mat-form-field>
     <input required formControlName="title" type="text" matInput placeholder="Title">
   </mat-form-field>
+
+  <!-- DESCRIPTION -->
+  <mat-form-field>
+    <input required formControlName="description" type="text" matInput placeholder="Description">
+  </mat-form-field>
+
   <!-- AUTHOR FIELD -->
   <mat-form-field>
     <input required formControlName="author" type="text" placeholder="Author" aria-label="Author" matInput
@@ -15,6 +21,7 @@
       </mat-option>
     </mat-autocomplete>
   </mat-form-field>
+
   <!-- SERIES FIELD -->
   <mat-form-field>
     <input formControlName='series' type="text" placeholder="Series" aria-label="Series" matInput [matAutocomplete]="seriesAutoComplete">
@@ -25,6 +32,7 @@
     </mat-autocomplete>
   </mat-form-field>
 </form>
+
 <!-- ACTIONS -->
 <div mat-dialog-actions fxLayoutAlign="center center" fxLayoutGap="50px">
   <button id='cancel-button' mat-stroked-button color='error' mat-dialog-close>Cancel</button>

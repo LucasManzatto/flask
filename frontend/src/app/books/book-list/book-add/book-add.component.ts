@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BookService } from '../../../shared/services/book.service';
-import { Book } from '../../../shared/models/book.model';
+import { Book, BookDTO } from '../../../shared/models/book.model';
 import { FormControl, FormGroup, FormArray, FormBuilder, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
@@ -8,7 +8,6 @@ import { Author } from '../../../shared/models/author.model';
 import { AuthorService } from '../../../shared/services/author.service';
 import { SeriesService } from '../../../shared/services/series.service';
 import { Series } from '../../../shared/models/series.model';
-import { controlNameBinding } from '@angular/forms/src/directives/reactive_directives/form_control_name';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
@@ -32,19 +31,17 @@ export class BookAddComponent implements OnInit {
     public dialogRef: MatDialogRef<BookAddComponent>) { }
 
   ngOnInit() {
-    this.initForm();
-    this.book = this.initBook();
+    this.book = this.bookService.editing ? this.bookService.currentItem : this.initBook();
+    this.form = this.initForm();
     this.getAuthors();
-    if (this.bookService.editing) {
-      this.book = this.bookService.currentItem;
-    }
   }
 
   initForm() {
-    this.form = this.formBuilder.group({
-      title: ['', Validators.required],
-      author: ['', [Validators.required, this.validateAutocomplete]],
-      series: ['', this.validateAutocomplete]
+    return this.formBuilder.group({
+      title: [this.book.title, Validators.required],
+      description: [this.book.description, Validators.required],
+      author: [this.book.author.name, [Validators.required, this.validateAutocomplete]],
+      series: [this.book.series ? this.book.series.title : '', this.validateAutocomplete]
     });
   }
   validateAutocomplete(control: FormControl) {
@@ -55,24 +52,24 @@ export class BookAddComponent implements OnInit {
     } : null;
   }
 
-  getSeries(authorId) {
+  getSeries(authorId: number) {
     this.authorService.getSeries(authorId).subscribe(res => {
       this.series = res;
-      this.filteredSeries = this.initFilteredOptions(this.series, 'series', 'title');
+      this.filteredSeries = this.initFilteredOptions(this.series, 'series', 'title', this.form);
     });
   }
   getAuthors() {
     this.authorService.getAll('{items{id,name}}').subscribe(res => {
       this.authors = res.items;
-      this.filteredAuthors = this.initFilteredOptions(this.authors, 'author', 'name');
+      this.filteredAuthors = this.initFilteredOptions(this.authors, 'author', 'name', this.form);
     });
   }
 
-  initFilteredOptions(arrayToFilter: any[], control: string, propToFilter: string) {
-    return this.form.controls[control].valueChanges
+  initFilteredOptions(arrayToFilter: any[], control: string, propToFilter: string, form: FormGroup) {
+    return form.controls[control].valueChanges
       .pipe(
         startWith(''),
-        map(() => this._filterArray(arrayToFilter, this.form.get(control), propToFilter)),
+        map(() => this._filterArray(arrayToFilter, form.get(control), propToFilter)),
       );
   }
   private _filterArray(array: any[], formControl: any, property: string): any[] {
@@ -86,18 +83,26 @@ export class BookAddComponent implements OnInit {
   seriesDisplayFn = (series?: Series): string | undefined => series ? series.title : undefined;
 
   addBook() {
-    this.book = { title: this.form.value['title'], author: this.form.value['author'], series: this.form.value['series'] };
-    this.dialogRef.close();
+    const bookDTO: BookDTO = {
+      title: this.form.value['title'],
+      description: this.form.value['description'],
+      author_id: this.form.value['author'].id,
+    };
+    this.bookService.post(bookDTO).subscribe(res => {
+      this.dialogRef.close();
+    });
   }
 
   authorSelected(author: Author) {
-    this.book.author = author;
-    this.getSeries(author.id);
+    if (author.id) {
+      this.getSeries(author.id);
+    }
   }
 
   initBook(): Book {
     return {
       title: '',
+      description: '',
       author: {
         name: ''
       },
