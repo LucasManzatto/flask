@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BaseService } from './base.service';
-import { Author, AuthorDTO } from '../models/author.model';
+import { Author, AuthorDTO } from '../models/backend/author.model';
 import { Observable } from 'rxjs';
-import { Series } from '../models/series.model';
+import { Series } from '../models/backend/series.model';
 import { asyncData, createQuery } from '../utils';
 
 @Injectable({

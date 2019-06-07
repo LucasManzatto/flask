@@ -7,8 +7,8 @@ import { HttpRequest } from '@angular/common/http';
 import { isEqual, sortBy } from 'lodash';
 import { TestService } from './test.base.service';
 import { DEFAULT_PARAMETERS, DEFAULT_PARAMETERS_KEYS } from '../../parameters';
-import { Test } from '../../models/test.model';
-import { Query } from '../../models/query.model';
+import { Test } from '../../models/application/test.model';
+import { Query } from '../../models/application/query.model';
 
 describe('TestBaseService', () => {
   // We declare the variables that we'll use for the Test Controller and for our Service

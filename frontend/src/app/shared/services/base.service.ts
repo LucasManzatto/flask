@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Query } from '../models/query.model';
+import { Query } from '../models/application/query.model';
 import { API } from 'src/app/shared/api';
 import { DEFAULT_PARAMETERS } from 'src/app/shared/parameters';
 import { Observable } from 'rxjs';

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Book, BookDTO } from '../models/book.model';
+import { Book, BookDTO } from '../models/backend/book.model';
 import { BaseService } from './base.service';
 import { asyncData, createQuery } from '../utils';
 

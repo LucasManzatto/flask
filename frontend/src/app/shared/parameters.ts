@@ -1,4 +1,4 @@
-import { DefaultQuery } from './models/query.model';
+import { DefaultQuery } from './models/application/query.model';
 import { keys } from 'lodash';
 
 export const DEBOUNCE_TIME = 600;

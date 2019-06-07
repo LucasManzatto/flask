@@ -4,10 +4,10 @@ import {
   HttpClientTestingModule,
   HttpTestingController
 } from '@angular/common/http/testing';
-import { Book } from '../models/book.model';
+import { Book } from '../models/backend/book.model';
 import { HttpRequest } from '@angular/common/http';
 import { isEqual, sortBy } from 'lodash';
-import { Query } from '../models/query.model';
+import { Query } from '../models/application/query.model';
 import { DEFAULT_PARAMETERS_KEYS, DEFAULT_PARAMETERS } from '../parameters';
 import { AuthorService, AuthorServiceStub } from './author.service';
 
@@ -27,20 +27,7 @@ describe('AuthorService', () => {
   };
   const allQueryParams = sortBy(bookQueryParamKeys.concat(defaultParamKeys));
   const defaultQuery = DEFAULT_PARAMETERS;
-  const items: Book[] = [{
-    id: 1,
-    title: 'Test 1',
-    author: {
-      name: 'Author 1'
-    }
-  },
-  {
-    id: 2,
-    title: 'Test 2',
-    author: {
-      name: 'Author 2'
-    }
-  }];
+  const items: Book[] = [];
   const query: Query = {
     items,
     page: 1,

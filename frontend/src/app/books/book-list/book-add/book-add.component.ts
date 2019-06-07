@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { BookService } from '../../../shared/services/book.service';
-import { Book, BookDTO } from '../../../shared/models/book.model';
+import { Book, BookDTO } from '../../../shared/models/backend/book.model';
 import { FormControl, FormGroup, FormArray, FormBuilder, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
-import { Author } from '../../../shared/models/author.model';
+import { Author } from '../../../shared/models/backend/author.model';
 import { AuthorService } from '../../../shared/services/author.service';
 import { SeriesService } from '../../../shared/services/series.service';
-import { Series } from '../../../shared/models/series.model';
+import { Series } from '../../../shared/models/backend/series.model';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({

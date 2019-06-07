@@ -1,4 +1,4 @@
-import { Query } from './models/query.model';
+import { Query } from './models/application/query.model';
 import { defer } from 'rxjs';
 export const createQuery = (object: any[]): Query => {
     const query: Query = {

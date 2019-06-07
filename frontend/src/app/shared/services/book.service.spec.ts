@@ -4,10 +4,10 @@ import {
   HttpClientTestingModule,
   HttpTestingController
 } from '@angular/common/http/testing';
-import { Book } from '../models/book.model';
+import { Book } from '../models/backend/book.model';
 import { HttpRequest } from '@angular/common/http';
 import { isEqual, sortBy } from 'lodash';
-import { Query } from '../models/query.model';
+import { Query } from '../models/application/query.model';
 import { DEFAULT_PARAMETERS_KEYS, DEFAULT_PARAMETERS } from '../parameters';
 
 describe('BookService', () => {
@@ -29,6 +29,7 @@ describe('BookService', () => {
   const items: Book[] = [{
     id: 1,
     title: 'Test 1',
+    description: 'Description 1',
     author: {
       name: 'Author 1'
     }
@@ -36,6 +37,7 @@ describe('BookService', () => {
   {
     id: 2,
     title: 'Test 2',
+    description: 'Description 1',
     author: {
       name: 'Author 2'
     }
