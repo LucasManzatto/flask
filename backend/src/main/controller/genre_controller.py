@@ -58,4 +58,4 @@ class GenreBookCollection(Resource):
     @api.marshal_with(GenreDTO.genre_books)
     def get(self, id):
         """Find the genre books."""
-        return genre_service.get_genre_books(id)
+        return genre_service.get_model_fk(id, fk='books')

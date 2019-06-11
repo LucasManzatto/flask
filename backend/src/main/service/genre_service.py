@@ -9,7 +9,4 @@ class GenreService(BaseService):
         super().__init__(model=Genre, model_name='Genre', schema=GenreSchema(), filter_by=Genre.name,
                          filter_by_key='name', fks=fks)
 
-    @staticmethod
-    def get_genre_books(genre_id):
-        books = Genre.query.get(genre_id).books
-        return books
+

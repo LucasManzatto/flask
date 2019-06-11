@@ -58,7 +58,7 @@ class SeriesBookCollection(Resource):
     @api.marshal_with(SeriesDTO.series_books)
     def get(self, id):
         """Find the series books."""
-        return series_service.get_series_books(id)
+        return series_service.get_model_fk(id, fk='books')
 
 
 @api.route('/<int:id>/authors')
@@ -66,4 +66,4 @@ class SeriesAuthorCollection(Resource):
     @api.marshal_with(SeriesDTO.series_authors)
     def get(self, id):
         """Find the series authors."""
-        return series_service.get_series_authors(id)
+        return series_service.get_model_fk(id, fk='authors')

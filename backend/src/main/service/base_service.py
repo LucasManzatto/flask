@@ -65,6 +65,10 @@ class BaseService:
     def get_one(self, id):
         return self.model.query.get_or_404(id)
 
+    def get_model_fk(self, genre_id, fk):
+        item = self.model.query.get(genre_id)
+        return getattr(item, fk)
+
     def delete(self, id, *args):
         item = self.model.query.get(id)
         if item:
