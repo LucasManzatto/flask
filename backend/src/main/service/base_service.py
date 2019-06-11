@@ -1,5 +1,4 @@
 from backend.src.main import db
-from backend.src.main.model.books import Book
 from backend.src.main.service import utils
 from backend.src.main.util.utils import response_success, response_conflict, response_created, response_bad_request
 from marshmallow import ValidationError
@@ -7,12 +6,13 @@ from marshmallow import ValidationError
 
 class BaseService:
 
-    def __init__(self, model, schema, filter_by, filter_by_key, fks):
+    def __init__(self, model, model_name, schema, filter_by, filter_by_key, fks):
         self.model = model
         self.schema = schema
         self.filter_by = filter_by
         self.filter_by_key = filter_by_key
         self.fks = fks
+        self.model_name = model_name
 
     def upsert(self, data, update):
         fk_objects = self.get_fk(data, self.fks)
@@ -25,9 +25,10 @@ class BaseService:
         if not item or update:
             return self.update_item(data, fk_objects) if update else self.create(new_item, fk_objects)
         else:
-            return response_conflict('Series already exists. Please choose another title.')
+            return response_conflict(f'{self.model_name} already exists. Please choose another value.')
 
-    def get_fk(self, data, fks):
+    @staticmethod
+    def get_fk(data, fks):
         fk_objects = []
         for fk in fks:
             print(fk)
@@ -36,14 +37,21 @@ class BaseService:
             fk_objects.append({'key': fk['key'], 'value': items})
         return fk_objects
 
-    @staticmethod
-    def create(data, fks):
+    def create(self, data, fks):
         del data.id
         for fk in fks:
             setattr(data, fk['key'], fk['value'])
         db.session.add(data)
         db.session.commit()
-        return response_created('Book successfully created.')
+        return response_created(f'${self.model_name} successfully created.')
+
+    def update_item(self, data, fks):
+        item = self.model.query.get(data['id'])
+        for fk in fks:
+            setattr(item, fk['key'], fk['value'])
+        self.model.query.filter_by(id=data['id']).update(data)
+        db.session.commit()
+        return response_success(f'${self.model_name} successfully updated.')
 
     def get_all(self, args):
         page = args.pop('page', 0)
@@ -54,16 +62,8 @@ class BaseService:
                                                                                            max_per_page=page_size)
         return query_filter
 
-    def get_one(self, book_id):
-        return self.model.query.get_or_404(book_id)
-
-    def update_item(self, data, fks):
-        item = self.model.query.get(data['id'])
-        for fk in fks:
-            setattr(item, fk['key'], fk['value'])
-        self.model.query.filter_by(id=data['id']).update(data)
-        db.session.commit()
-        return response_success('Genre successfully updated.')
+    def get_one(self, id):
+        return self.model.query.get_or_404(id)
 
     def delete(self, id, *args):
         item = self.model.query.get(id)
@@ -74,4 +74,4 @@ class BaseService:
             db.session.commit()
             return response_success('')
         else:
-            return response_bad_request("Genre not found.")
+            return response_bad_request(f'${self.model_name} not found.')
