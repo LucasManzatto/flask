@@ -26,17 +26,17 @@ class BooksCollection(Resource):
     @use_args(books_args)
     def get(self, args):
         """List all books."""
-        return book_service.get_all_books(args)
+        return book_service.get_all(args)
 
     @api.expect(BookDTO.book_create)
     def post(self):
         """Creates a new book."""
-        return book_service.upsert_book(request.json, update=False)
+        return book_service.upsert(request.json, update=False)
 
     @api.expect(BookDTO.book_update)
     def put(self):
         """Updates a book."""
-        return book_service.upsert_book(request.json, update=True)
+        return book_service.upsert(request.json, update=True)
 
 
 @api.route('/<int:id>')
@@ -44,12 +44,12 @@ class BookItem(Resource):
     @api.marshal_with(BookDTO.book_list)
     def get(self, id):
         """Find a book by the ID."""
-        return book_service.get_a_book(id)
+        return book_service.get_one(id)
 
     @staticmethod
     def delete(id):
         """Deletes a book."""
-        return book_service.delete_book(id)
+        return book_service.delete(id)
 
 
 @api.route('/<int:id>/author')

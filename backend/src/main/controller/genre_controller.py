@@ -1,6 +1,6 @@
 from flask import request
 from flask_restplus import Resource
-from backend.src.main.service import genre_service
+from backend.src.main.service.genre_service import GenreService
 
 from backend.src.main.util.dto import GenreDTO, base_args
 from webargs import fields
@@ -15,6 +15,8 @@ genre_args = {
 }
 genre_args.update(base_args)
 
+genre_service = GenreService()
+
 
 @api.route('/')
 @api.doc(
@@ -24,17 +26,17 @@ class BooksCollection(Resource):
     @use_args(genre_args)
     def get(self, args):
         """List all genres."""
-        return genre_service.get_all_genres(args)
+        return genre_service.get_all(args)
 
     @api.expect(GenreDTO.genre_create)
     def post(self):
         """Creates a new genre."""
-        return genre_service.upsert_genre(request.json, update=False)
+        return genre_service.upsert(data=request.json, update=False)
 
     @api.expect(GenreDTO.genre_update)
     def put(self):
         """Updates a genre."""
-        return genre_service.upsert_genre(request.json, update=True)
+        return genre_service.upsert(data=request.json, update=True)
 
 
 @api.route('/<int:id>')
@@ -43,12 +45,12 @@ class BookItem(Resource):
     @api.marshal_with(GenreDTO.genre_list)
     def get(id):
         """Find a genre by the ID."""
-        return genre_service.get_a_genre(id)
+        return genre_service.get_one(id)
 
     @staticmethod
     def delete(id):
         """Deletes a genre."""
-        return genre_service.delete_genre(id)
+        return genre_service.delete(id, {'key': 'books'})
 
 
 @api.route('/<int:id>/books')

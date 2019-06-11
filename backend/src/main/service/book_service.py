@@ -13,7 +13,7 @@ from sqlalchemy import or_, and_, text
 from sqlalchemy.orm import joinedload
 
 
-def upsert_book(data, update):
+def upsert(data, update):
     genres = get_genres(data)
     try:
         new_book = BookSchema().load(data)
@@ -28,7 +28,8 @@ def upsert_book(data, update):
         series = Series.query.filter(Series.id == new_book.series_id).first()
         if author:
             if series or not new_book.series_id:
-                return update_existing_book(data, genres) if update else create_new_book(new_book, genres)
+                return update_item(data, genres) if update else create(new_book,
+                                                                            {'key': 'genres', 'value': genres})
             elif new_book.series_id:
                 return response_bad_request("Series doesn't exist.")
         else:
@@ -37,20 +38,22 @@ def upsert_book(data, update):
         return response_conflict('Book already exists. Please choose another title.')
 
 
-def get_genres(data):
-    genre_ids = data.pop('genre_ids', [])
-    return Genre.query.filter(Genre.id.in_(genre_ids)).all()
-
-
-def update_existing_book(data, genres):
-    book = Book.query.get(data['id'])
-    book.genres = genres
-    Book.query.filter_by(id=data['id']).update(data)
+def delete(book_id):
+    Book.query.filter_by(id=book_id).delete(synchronize_session=False)
     db.session.commit()
-    return response_success("Book successfully updated.")
+    return response_success('Book successfully deleted.')
 
 
-def get_all_books(args):
+def create(data, *args):
+    del data.id
+    for arg in args:
+        setattr(data, arg['key'], arg['value'])
+    db.session.add(data)
+    db.session.commit()
+    return response_created('Book successfully created.')
+
+
+def get_all(args):
     page = int(args.pop('page', 0))
     page_size = int(args.pop('per_page', 10))
     sort_query = utils.get_sort_query(args, Book)
@@ -62,8 +65,21 @@ def get_all_books(args):
     return query_filter
 
 
-def get_a_book(book_id):
+def get_one(book_id):
     return Book.query.get_or_404(book_id)
+
+
+def get_genres(data):
+    genre_ids = data.pop('genre_ids', [])
+    return Genre.query.filter(Genre.id.in_(genre_ids)).all()
+
+
+def update_item(data, genres):
+    book = Book.query.get(data['id'])
+    book.genres = genres
+    Book.query.filter_by(id=data['id']).update(data)
+    db.session.commit()
+    return response_success("Book successfully updated.")
 
 
 def get_book_author(book_id):
@@ -80,17 +96,3 @@ def get_book_genres(book_id):
 def get_book_series(book_id):
     series = Book.query.get(book_id).series
     return series
-
-
-def delete_book(book_id):
-    Book.query.filter_by(id=book_id).delete(synchronize_session=False)
-    db.session.commit()
-    return response_success('Book successfully deleted.')
-
-
-def create_new_book(data, genres):
-    del data.id
-    data.genres = genres
-    db.session.add(data)
-    db.session.commit()
-    return response_created('Book successfully created.')

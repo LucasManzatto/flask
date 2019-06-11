@@ -66,6 +66,8 @@ export class BookListComponent implements OnInit, AfterViewInit {
     this.displayedColumns = ['select', ...this.columns.map(x => x.columnDef), 'actions'];
   }
 
+  // TODO : não está carregando o objeto salvo no book add porque está buscando a página em cache
+  // que não existe o novo objeto
   loadData() {
     const queryParameters = {
       'id': this.filterId,
