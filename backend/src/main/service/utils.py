@@ -4,6 +4,13 @@ import re
 
 
 def get_query(model, args):
+    """Create 2 queries, one to query all columns and one to filter by column. Also check if it needs to query a foreign
+    key.
+
+    :param model: The model to create the query.
+    :param args: The arguments of the query passed by the user.
+    :return: A tuple of the query all and the column queries
+    """
     query_all = args.pop('query_all', '')
     queries_all_columns = []
     queries_by_column = []
@@ -29,6 +36,13 @@ def create_query(model, key, query):
 
 
 def get_sort_query(args, model):
+    """ Create the sort query, setting the direction(ASC or DESC) and the column to sort. It also checks if the column
+    is a foreign key
+
+    :param args: The direction and sort_column
+    :param model: The model do create the query
+    :return: The query based on the arguments
+    """
     direction = args.pop('direction', 'ASC')
     sort_column = args.pop('sort_column', 'id')
     sort_by_fk = re.split('_', sort_column)
