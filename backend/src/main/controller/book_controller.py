@@ -1,7 +1,7 @@
 from flask import request
 from flask_restplus import Resource
 
-from backend.src.main.service import book_service
+from backend.src.main.service.book_service import BookService
 from backend.src.main.util.dto import BookDTO, base_args
 from webargs import fields
 from webargs.flaskparser import use_args
@@ -15,6 +15,8 @@ books_args = {
     'author_name': fields.Str(missing='')
 }
 books_args.update(base_args)
+
+book_service = BookService()
 
 
 @api.route('/')
@@ -57,7 +59,7 @@ class BookAuthorItem(Resource):
     @api.marshal_with(BookDTO.book_author)
     def get(self, id):
         """Find the book's author."""
-        return book_service.get_book_author(id)
+        return book_service.get_model_fk(id, 'author')
 
 
 @api.route('/<int:id>/genres')
@@ -65,7 +67,7 @@ class BookGenreCollection(Resource):
     @api.marshal_with(BookDTO.book_genre)
     def get(self, id):
         """Find the book genres."""
-        return book_service.get_book_genres(id)
+        return book_service.get_model_fk(id, 'genres')
 
 
 @api.route('/<int:id>/series')
@@ -73,4 +75,4 @@ class BookSeriesItem(Resource):
     @api.marshal_with(BookDTO.book_series)
     def get(self, id):
         """Find the book series."""
-        return book_service.get_book_series(id)
+        return book_service.get_model_fk(id, 'series')

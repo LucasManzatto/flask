@@ -6,16 +6,20 @@ from marshmallow import ValidationError
 
 class BaseService:
 
-    def __init__(self, model, model_name, schema, filter_by, filter_by_key, fks):
+    def __init__(self, model, model_name, schema, filter_by, filter_by_key, fks, dependencies=None):
+        if dependencies is None:
+            dependencies = []
         self.model = model
         self.schema = schema
         self.filter_by = filter_by
         self.filter_by_key = filter_by_key
         self.fks = fks
         self.model_name = model_name
+        self.dependencies = dependencies
 
     def upsert(self, data, update):
         fk_objects = self.get_fk(data, self.fks)
+        print(fk_objects)
         try:
             new_item = self.schema.load(data)
         except ValidationError as err:
@@ -31,10 +35,12 @@ class BaseService:
     def get_fk(data, fks):
         fk_objects = []
         for fk in fks:
-            print(fk)
             ids = data.pop(fk['attr_name'], [])
-            items = fk['fk_model'].query.filter(fk['fk_model'].id.in_(ids)).all()
-            fk_objects.append({'key': fk['key'], 'value': items})
+            if isinstance(ids, float):
+                ids = [ids]
+            if ids:
+                items = fk['fk_model'].query.filter(fk['fk_model'].id.in_(ids)).all()
+                fk_objects.append({'key': fk['key'], 'value': items})
         return fk_objects
 
     def create(self, data, fks):
@@ -43,7 +49,7 @@ class BaseService:
             setattr(data, fk['key'], fk['value'])
         db.session.add(data)
         db.session.commit()
-        return response_created(f'${self.model_name} successfully created.')
+        return response_created(f'{self.model_name} successfully created.')
 
     def update_item(self, data, fks):
         item = self.model.query.get(data['id'])
@@ -51,7 +57,7 @@ class BaseService:
             setattr(item, fk['key'], fk['value'])
         self.model.query.filter_by(id=data['id']).update(data)
         db.session.commit()
-        return response_success(f'${self.model_name} successfully updated.')
+        return response_success(f'{self.model_name} successfully updated.')
 
     def get_all(self, args):
         page = args.pop('page', 0)
@@ -65,17 +71,27 @@ class BaseService:
     def get_one(self, id):
         return self.model.query.get_or_404(id)
 
-    def get_model_fk(self, genre_id, fk):
-        item = self.model.query.get(genre_id)
+    def get_model_fk(self, id, fk):
+        item = self.model.query.get(id)
         return getattr(item, fk)
 
     def delete(self, id, *args):
         item = self.model.query.get(id)
         if item:
-            for arg in args:
-                setattr(item, arg['key'], [])
-            self.model.query.filter_by(id=id).delete()
-            db.session.commit()
-            return response_success('')
+            if self.has_no_dependencies(item):
+                for arg in args:
+                    setattr(item, arg['key'], [])
+                self.model.query.filter_by(id=id).delete()
+                db.session.commit()
+                return response_success('')
+            else:
+                return response_conflict(
+                    f'{self.model_name} has dependencies {self.dependencies} and cannot be deleted.')
         else:
-            return response_bad_request(f'${self.model_name} not found.')
+            return response_bad_request(f'{self.model_name} not found.')
+
+    def has_no_dependencies(self, item):
+        for dependency in self.dependencies:
+            if getattr(item, dependency):
+                return False
+        return True

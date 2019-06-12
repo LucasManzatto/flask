@@ -8,5 +8,3 @@ class GenreService(BaseService):
         fks = [{'key': 'books', 'attr_name': 'books_ids', 'fk_model': Book}]
         super().__init__(model=Genre, model_name='Genre', schema=GenreSchema(), filter_by=Genre.name,
                          filter_by_key='name', fks=fks)
-
-
