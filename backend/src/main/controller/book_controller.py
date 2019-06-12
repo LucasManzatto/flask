@@ -8,71 +8,72 @@ from webargs.flaskparser import use_args
 
 api = BookDTO.api
 
-books_args = {
+list_all_args = {
     "id": fields.Str(missing=''),
     "title": fields.Str(missing=''),
     "description": fields.Str(missing=''),
     'author_name': fields.Str(missing='')
 }
-books_args.update(base_args)
+list_all_args.update(base_args)
 
-book_service = BookService()
+service = BookService()
+dto = BookDTO
 
 
 @api.route('/')
 @api.doc(
-    responses={200: 'OK', 201: 'Created', 400: 'Invalid Argument', 404: 'Book not found.', 500: 'Mapping Key Error'})
+    responses={200: 'OK', 201: 'Created', 400: 'Invalid_ Argument', 404: 'Book not found.', 500: 'Mapping Key Error'})
 class BooksCollection(Resource):
 
-    @api.marshal_list_with(BookDTO.book_query, code=201)
-    @use_args(books_args)
+    @api.marshal_list_with(dto.query, code=201)
+    @use_args(list_all_args)
     def get(self, args):
         """List all books."""
-        return book_service.get_all(args)
+        return service.get_all(args)
 
-    @api.expect(BookDTO.book_create)
+    @api.expect(dto.create)
     def post(self):
         """Creates a new book."""
-        return book_service.upsert(request.json, update=False)
+        return service.upsert(request.json, update=False)
 
-    @api.expect(BookDTO.book_update)
+    @api.expect(dto.update)
     def put(self):
         """Updates a book."""
-        return book_service.upsert(request.json, update=True)
+        return service.upsert(request.json, update=True)
 
 
-@api.route('/<int:id>')
+@api.route('/<int:id_>')
 class BookItem(Resource):
-    @api.marshal_with(BookDTO.book_list)
-    def get(self, id):
+    @api.marshal_with(dto.list)
+    def get(self, id_):
         """Find a book by the ID."""
-        return book_service.get_one(id)
+        return service.get_one(id_)
 
     @staticmethod
-    def delete(id):
+    def delete(id_):
         """Deletes a book."""
-        return book_service.delete(id)
+        return service.delete(id_)
 
 
-@api.route('/<int:id>/author')
+@api.route('/<int:id_>/author')
 class BookAuthorItem(Resource):
-    @api.marshal_with(BookDTO.book_author)
-    def get(self, id):
+    @api.marshal_with(dto.fk_author)
+    def get(self, id_):
         """Find the book's author."""
-        return book_service.get_model_fk(id, 'author')
+        return service.get_model_fk_object(id_, 'author')
 
 
-@api.route('/<int:id>/genres')
+@api.route('/<int:id_>/genres')
 class BookGenreCollection(Resource):
-    @api.marshal_with(BookDTO.book_genre)
-    def get(self, id):
+    @api.marshal_with(dto.fk_genre)
+    def get(self, id_):
         """Find the book genres."""
-        return book_service.get_model_fk(id, 'genres')
+        return service.get_model_fk_object(id_, 'genres')
 
 
-@api.route('/<int:id>/series')
+@api.route('/<int:id_>/series')
 class BookSeriesItem(Resource):
-    @api.marshal_with(BookDTO.book_series)
-    def get(self, id):
+    @api.marshal_with(dto.fk_series)
+    def get(self, id_):
         """Find the book series."""
-        return book_service.get_model_fk(id, 'series')
+        return service.get_model_fk_object(id_, 'series')

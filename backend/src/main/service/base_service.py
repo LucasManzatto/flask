@@ -2,11 +2,14 @@ from backend.src.main import db
 from backend.src.main.service import utils
 from backend.src.main.util.utils import response_success, response_conflict, response_created, response_bad_request
 from marshmallow import ValidationError
+from sqlalchemy.orm import joinedload
 
 
 class BaseService:
 
-    def __init__(self, model, model_name, schema, filter_by, filter_by_key, fks, dependencies=None):
+    def __init__(self, model, model_name, schema, filter_by, filter_by_key, fks, dependencies=None, joins=None):
+        if joins is None:
+            joins = []
         if dependencies is None:
             dependencies = []
         self.model = model
@@ -16,72 +19,117 @@ class BaseService:
         self.fks = fks
         self.model_name = model_name
         self.dependencies = dependencies
+        self.joins = joins
 
     def upsert(self, data, update):
+        """
+        Create or update a row. First it check if the json is valid, then check if the object already exists in the
+        database, if it doesn't exist call the update or create function based on the update parameter
+        :param data: Data in JSON to be created or updated
+        :param update: Boolean value to tell if it's a create or update
+        :return: Success if created or updated, bad request if JSON is wrong, or conflict if object already exists
+        """
         fk_objects = self.get_fk(data, self.fks)
-        print(fk_objects)
         try:
             new_item = self.schema.load(data)
         except ValidationError as err:
             return response_bad_request(err.messages)
 
         item = self.model.query.filter(self.filter_by == data[self.filter_by_key]).first()
-        if not item or update:
-            return self.update_item(data, fk_objects) if update else self.create(new_item, fk_objects)
-        else:
+        if item:
             return response_conflict(f'{self.model_name} already exists. Please choose another value.')
+        else:
+            return self.update_item(data, fk_objects) if update else self.create(new_item, fk_objects)
 
     @staticmethod
     def get_fk(data, fks):
+        """
+        Cria um array de objetos do tipo {key,value} a partir dos IDs recebidos do usuário
+        :param data: Objeto com os IDs recebidos
+        :param fks: Objeto com {fk_model,attr_name} para filtrar o objeto data
+        :return: Retorna um array de {key,value}
+        """
         fk_objects = []
         for fk in fks:
+            model = fk['fk_model']
             ids = data.pop(fk['attr_name'], [])
-            if isinstance(ids, float):
+            if not isinstance(ids, list):
                 ids = [ids]
             if ids:
-                items = fk['fk_model'].query.filter(fk['fk_model'].id.in_(ids)).all()
+                items = model.query.filter(model.id.in_(ids)).all()
                 fk_objects.append({'key': fk['key'], 'value': items})
         return fk_objects
 
-    def create(self, data, fks):
+    def create(self, data, fk_objects):
         del data.id
-        for fk in fks:
+        for fk in fk_objects:
             setattr(data, fk['key'], fk['value'])
         db.session.add(data)
         db.session.commit()
         return response_created(f'{self.model_name} successfully created.')
 
-    def update_item(self, data, fks):
+    def update_item(self, data, fk_objects):
         item = self.model.query.get(data['id'])
-        for fk in fks:
+        for fk in fk_objects:
             setattr(item, fk['key'], fk['value'])
         self.model.query.filter_by(id=data['id']).update(data)
         db.session.commit()
         return response_success(f'{self.model_name} successfully updated.')
 
     def get_all(self, args):
+        """
+        Retornar todos os elementos de uma tabela, com paginação e sort
+        :param args: Parâmetros da query passados pelo usuário
+        :return:
+        """
         page = args.pop('page', 0)
         page_size = int(args.pop('per_page', 10))
         sort_query = utils.get_sort_query(args, self.model)
         sub_queries = utils.get_query(self.model, args)
-        query_filter = self.model.query.filter(*sub_queries).order_by(sort_query).paginate(page=page, error_out=False,
-                                                                                           max_per_page=page_size)
+        base_query = self.create_base_query()
+        query_filter = base_query.filter(*sub_queries).order_by(sort_query).paginate(page=page, error_out=False,
+                                                                                     max_per_page=page_size)
         return query_filter
 
-    def get_one(self, id):
-        return self.model.query.get_or_404(id)
+    def create_base_query(self):
+        """
+        Cria uma base query do tipo Model.query.join('FK_Model1').join('FK_Model2')
+        .options(joinedload('table_name1'),joinedload('table_name2')) para quando a tabela precisa do join para a query
+        Se não houver join a query será apenas Model.query
+        :return:
+        """
+        base_query = self.model.query
+        options = None
+        for join in self.joins:
+            base_query = base_query.join(join['join_model'])
+            options = joinedload(join['joinedload']) if not options else options.joinedload(join['joinedload'])
+        if options:
+            base_query = base_query.options(options)
+        return base_query
 
-    def get_model_fk(self, id, fk):
+    def get_one(self, id_):
+        return self.model.query.get_or_404(id_)
+
+    def get_model_fk_object(self, id, fk):
         item = self.model.query.get(id)
         return getattr(item, fk)
 
-    def delete(self, id, *args):
-        item = self.model.query.get(id)
+    def delete(self, id_, fks_array=None):
+        """
+        Deletes an object from the database. Deletion occurs when the object is found and has no dependencies.If it can
+        be delete, it first empties all fk references.
+        :param id_: ID of the object to be deleted
+        :param fks_array: array with all the foreign keys to empty the table
+        :return: Success, conflict or bad request.
+        """
+        if fks_array is None:
+            fks_array = []
+        item = self.model.query.get(id_)
         if item:
-            if self.has_no_dependencies(item):
-                for arg in args:
-                    setattr(item, arg['key'], [])
-                self.model.query.filter_by(id=id).delete()
+            if self.has_no_dependencies(item, self.dependencies):
+                for fk in fks_array:
+                    setattr(item, fk, [])
+                self.model.query.filter_by(id=id_).delete()
                 db.session.commit()
                 return response_success('')
             else:
@@ -90,8 +138,15 @@ class BaseService:
         else:
             return response_bad_request(f'{self.model_name} not found.')
 
-    def has_no_dependencies(self, item):
-        for dependency in self.dependencies:
+    @staticmethod
+    def has_no_dependencies(item, dependencies):
+        """
+        Based on an array of dependencies, check if the item has no dependencies.
+        :param item: Item to be checked
+        :param dependencies: Array with the dependencies as strings
+        :return: True if has no dependencies, False if has.
+        """
+        for dependency in dependencies:
             if getattr(item, dependency):
                 return False
         return True

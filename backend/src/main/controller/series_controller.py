@@ -8,62 +8,63 @@ from webargs.flaskparser import use_args
 
 api = SeriesDTO.api
 
-series_args = {
+list_all_args = {
     "id": fields.Str(missing=''),
     "title": fields.Str(missing=''),
     "description": fields.Str(missing=''),
 }
-series_args.update(base_args)
+list_all_args.update(base_args)
 
-series_service = SeriesService()
+service = SeriesService()
+dto = SeriesDTO
 
 
 @api.route('/')
-@api.doc(responses={200: 'OK', 400: 'Invalid Argument', 404: 'Series not found.', 500: 'Mapping Key Error'})
+@api.doc(responses={200: 'OK', 400: 'Invalid_ Argument', 404: 'Series not found.', 500: 'Mapping Key Error'})
 class SeriesCollection(Resource):
-    @api.marshal_list_with(SeriesDTO.series_query, code=201)
-    @use_args(series_args)
+    @api.marshal_list_with(dto.query, code=201)
+    @use_args(list_all_args)
     def get(self, args):
         """List all series."""
-        return series_service.get_all(args)
+        return service.get_all(args)
 
     @api.response(201, 'Series successfully created.')
-    @api.expect(SeriesDTO.series_create)
+    @api.expect(dto.create)
     def post(self):
         """Creates a new series."""
-        return series_service.upsert(request.json, update=False)
+        return service.upsert(request.json, update=False)
 
     @api.response(201, 'Series successfully updated.')
-    @api.expect(SeriesDTO.series_update)
+    @api.expect(dto.update)
     def put(self):
         """Updates a series."""
-        return series_service.upsert(request.json, update=True)
+        return service.upsert(request.json, update=True)
 
 
-@api.route('/<int:id>')
+@api.route('/<int:id_>')
 class SeriesItem(Resource):
-    @api.marshal_with(SeriesDTO.series_list)
-    def get(self, id):
+    @api.marshal_with(dto.list)
+    def get(self, id_):
         """Find a series by the ID."""
-        return series_service.get_one(id)
+        return service.get_one(id_)
 
     @api.response(200, 'Series successfully deleted.')
-    def delete(self, id):
+    def delete(self, id_):
         """Deletes a series."""
-        return series_service.delete(id, {'key': 'books'})
+        return service.delete(id_, ['books'])
 
 
-@api.route('/<int:id>/books')
+@api.route('/<int:id_>/books')
 class SeriesBookCollection(Resource):
-    @api.marshal_with(SeriesDTO.series_books)
-    def get(self, id):
+    @api.marshal_with(dto.fk_books)
+    def get(self, id_):
         """Find the series books."""
-        return series_service.get_model_fk(id, fk='books')
+        return service.get_model_fk_object(id_, fk='books')
 
 
-@api.route('/<int:id>/authors')
+@api.route('/<int:id_>/authors')
 class SeriesAuthorCollection(Resource):
-    @api.marshal_with(SeriesDTO.series_authors)
-    def get(self, id):
+    @api.marshal_with(dto.fk_authors)
+    def get(self, id_):
         """Find the series authors."""
-        return series_service.get_model_fk(id, fk='authors')
+        return service.get_model_fk_object(id_, fk='authors')
