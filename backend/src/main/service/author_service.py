@@ -6,7 +6,8 @@ from marshmallow import INCLUDE
 
 class AuthorService(BaseService):
     def __init__(self):
-        fks = [{'key': 'series', 'attr_name': 'series_ids', 'fk_model': Series}]
+        series_fk = {'key': 'series', 'attr_name': 'series_ids', 'fk_model': Series}
+        fks = [series_fk]
         dependencies = ['books', 'series']
         super().__init__(model=Author, model_name='Author', schema=AuthorSchema(unknown=INCLUDE), filter_by=Author.name,
                          filter_by_key='name', fks=fks, dependencies=dependencies)
