@@ -3,6 +3,7 @@ import { Query } from '../models/application/query.model';
 import { API } from 'src/app/shared/api';
 import { DEFAULT_PARAMETERS } from 'src/app/shared/parameters';
 import { Observable } from 'rxjs';
+import { GlobalService } from './global.service';
 
 export abstract class BaseService<T, V> {
 
@@ -11,7 +12,9 @@ export abstract class BaseService<T, V> {
 
   baseUrl: string;
   getOneUrl: string;
-  constructor(protected http: HttpClient, endpoint: string) {
+  constructor(protected http: HttpClient,
+    endpoint: string,
+    private globalService: GlobalService) {
     this.baseUrl = `${API}/${endpoint}/`;
   }
 
@@ -37,14 +40,17 @@ export abstract class BaseService<T, V> {
   }
 
   public post(item: V): Observable<any> {
+    this.globalService.reloadData = true;
     return this.http.post(this.baseUrl, item);
   }
 
   public put(item: V): Observable<any> {
+    this.globalService.reloadData = true;
     return this.http.put(this.baseUrl, item);
   }
 
   public delete(id: number): Observable<any> {
+    this.globalService.reloadData = true;
     return this.http.delete(this.baseUrl + id);
   }
 }

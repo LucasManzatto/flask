@@ -5,6 +5,7 @@ import { Author, AuthorDTO } from '../models/backend/author.model';
 import { Observable } from 'rxjs';
 import { Series } from '../models/backend/series.model';
 import { asyncData, createQuery } from '../utils';
+import { GlobalService } from './global.service';
 
 @Injectable({
   providedIn: 'root',
@@ -16,8 +17,8 @@ export class AuthorService extends BaseService<Author, AuthorDTO> {
 
   getSeriesUrl = id => `${this.baseUrl}${id}/series`;
 
-  constructor(http: HttpClient) {
-    super(http, 'authors');
+  constructor(http: HttpClient, globalService: GlobalService) {
+    super(http, 'authors', globalService);
   }
 
   getSeries(id: number): Observable<Series[]> {
