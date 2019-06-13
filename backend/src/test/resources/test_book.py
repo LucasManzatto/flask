@@ -58,6 +58,8 @@ def test_insert_book_with_genres(test_client, db_session):
     }
     generic_tests.insert(db_session=db_session, test_client=test_client, json_data=book_json)
 
+# TODO: test insert com todas as propriedades e checar se todas as propriedades foram inseridas corretamente no banco
+
 
 def test_insert_book_duplicated(test_client, db_session):
     generic_tests.insert(db_session=db_session, test_client=test_client, existing=True)
