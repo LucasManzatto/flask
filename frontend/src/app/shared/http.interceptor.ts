@@ -5,17 +5,24 @@ import { Observable } from 'rxjs';
 import { of } from 'rxjs';
 import { startWith, tap } from 'rxjs/operators';
 import { RequestCache } from './request.cache';
+import { GlobalService } from './services/global.service';
 
 
 @Injectable()
 export class CachingInterceptor implements HttpInterceptor {
     cache: RequestCache;
-    constructor() {
+    constructor(public globalService: GlobalService) {
         this.cache = new RequestCache();
     }
     intercept(req: HttpRequest<any>, next: HttpHandler) {
         const cachedResponse = this.cache.get(req);
-        return cachedResponse ? of(cachedResponse) : this.sendRequest(req, next, this.cache);
+        // Manda a requisição novamente para qualquer método que nao seja o GET, se não houver a resposta em cache
+        // ou se está criando ou editando uma tabela.
+        if (req.method !== 'GET' || !cachedResponse || this.globalService.reloadData) {
+            return this.sendRequest(req, next, this.cache);
+        } else {
+            return of(cachedResponse);
+        }
     }
 
     sendRequest(
