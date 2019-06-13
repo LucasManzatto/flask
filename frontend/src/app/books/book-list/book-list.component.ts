@@ -13,6 +13,7 @@ import { ColumnModel } from '../../shared/models/application/column.model';
 import { MatDialog } from '@angular/material/dialog';
 import { BookAddComponent } from './book-add/book-add.component';
 import { SelectionModel } from '@angular/cdk/collections';
+import { GlobalService } from '../../shared/services/global.service';
 
 @Component({
   selector: 'app-book-list',
@@ -38,7 +39,9 @@ export class BookListComponent implements OnInit, AfterViewInit {
   defaultParameters = new DefaultQuery();
   selection = new SelectionModel<Book>(true, []);
 
-  constructor(private bookService: BookService, public dialog: MatDialog) { }
+  constructor(private bookService: BookService,
+    public dialog: MatDialog,
+    private globalService: GlobalService) { }
 
   ngOnInit() {
     this.initColumns();
@@ -76,6 +79,7 @@ export class BookListComponent implements OnInit, AfterViewInit {
     };
     this.bookService.getAllWithParameters(this.defaultParameters, queryParameters)
       .subscribe(res => {
+        this.globalService.reloadData = false;
         this.selection.clear();
         this.dataSource.data = res.items;
         this.dataLength = res.total;
@@ -137,6 +141,14 @@ export class BookListComponent implements OnInit, AfterViewInit {
     this.isAllSelected() ?
       this.selection.clear() :
       this.dataSource.data.forEach(row => this.selection.select(row));
+  }
+
+  deleteRow(row: Book) {
+    if (row.id) {
+      this.bookService.delete(row.id).subscribe(() => {
+        this.loadData();
+      });
+    }
   }
 
 }

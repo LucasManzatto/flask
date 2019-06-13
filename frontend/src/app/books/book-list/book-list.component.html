@@ -44,7 +44,7 @@
               <mat-icon (click)='openAddBookDialog(true,row)' [id]="'edit-button' + i" fxFlex='10' aria-hidden="false"
                 style='cursor: pointer;' matTooltip='Edit' color='accent'>edit
               </mat-icon>
-              <mat-icon fxFlex='10' aria-hidden="false" style='cursor: pointer;' matTooltip='Delete' color='warn'>delete
+              <mat-icon (click)='deleteRow(row)' fxFlex='10' aria-hidden="false" style='cursor: pointer;' matTooltip='Delete' color='warn'>delete
               </mat-icon>
             </div>
           </mat-cell>
