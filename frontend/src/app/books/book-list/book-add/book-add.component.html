@@ -1,4 +1,4 @@
-<h1 fxLayoutAlign="center center" mat-dialog-title style='color:#551a8b'>Add Book</h1>
+<h1 fxLayoutAlign="center center" mat-dialog-title style='color:#551a8b'>{{editing? 'Edit' : 'Add'}} Book</h1>
 <form [formGroup]='form' fxLayout="column" mat-dialog-content>
   <!-- TITLE -->
   <mat-form-field>
@@ -12,8 +12,8 @@
 
   <!-- AUTHOR FIELD -->
   <mat-form-field>
-    <input required formControlName="author" type="text" placeholder="Author" aria-label="Author" matInput
-      [matAutocomplete]="authorAutocomplete">
+    <input required formControlName="author" type="text" (keyup)='checkField(form.value["author"])' placeholder="Author"
+      aria-label="Author" matInput [matAutocomplete]="authorAutocomplete">
     <mat-autocomplete name='authorAutoComplete' autoActiveFirstOption (optionSelected)='authorSelected($event.option.value)'
       #authorAutocomplete="matAutocomplete" [displayWith]="authorDisplayFn">
       <mat-option *ngFor="let option of filteredAuthors | async" [value]="option">
@@ -36,6 +36,6 @@
 <!-- ACTIONS -->
 <div mat-dialog-actions fxLayoutAlign="center center" fxLayoutGap="50px">
   <button id='cancel-button' mat-stroked-button color='error' mat-dialog-close>Cancel</button>
-  <button type='submit' id='add-button' [disabled]='form.invalid' mat-flat-button color='primary' (click)='addBook()'>Add
-    Book</button>
+  <button type='submit' id='add-button' [disabled]='form.invalid' mat-flat-button color='primary' (click)='addBook()'>{{editing?
+    'Edit' : 'Add'}} Book</button>
 </div>

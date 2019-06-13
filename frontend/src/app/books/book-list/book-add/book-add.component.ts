@@ -24,6 +24,7 @@ export class BookAddComponent implements OnInit {
   authors: Author[] = [];
   filteredAuthors: Observable<Author[]>;
   form: FormGroup;
+  editing = false;
 
   constructor(private bookService: BookService,
     private authorService: AuthorService,
@@ -31,7 +32,8 @@ export class BookAddComponent implements OnInit {
     public dialogRef: MatDialogRef<BookAddComponent>) { }
 
   ngOnInit() {
-    this.book = this.bookService.editing ? this.bookService.currentItem : this.initBook();
+    this.editing = this.bookService.editing;
+    this.book = this.editing ? this.bookService.currentItem : this.initBook();
     if (this.book.author.id) {
       this.getSeries(this.book.author.id);
     }
@@ -115,5 +117,12 @@ export class BookAddComponent implements OnInit {
         title: ''
       }
     };
+  }
+  checkField(elem) {
+    if (typeof elem === 'string') {
+      this.series = [];
+      this.form.patchValue({ 'series': '' });
+      this.filteredSeries = this.initFilteredOptions(this.series, 'series', 'title', this.form);
+    }
   }
 }
