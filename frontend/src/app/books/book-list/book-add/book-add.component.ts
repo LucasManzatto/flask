@@ -9,6 +9,7 @@ import { AuthorService } from '../../../shared/services/author.service';
 import { SeriesService } from '../../../shared/services/series.service';
 import { Series } from '../../../shared/models/backend/series.model';
 import { MatDialogRef } from '@angular/material/dialog';
+import { GlobalService } from '../../../shared/services/global.service';
 
 @Component({
   selector: 'app-book-add',
@@ -26,12 +27,14 @@ export class BookAddComponent implements OnInit {
 
   constructor(private bookService: BookService,
     private authorService: AuthorService,
-    private seriesService: SeriesService,
     private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<BookAddComponent>) { }
 
   ngOnInit() {
     this.book = this.bookService.editing ? this.bookService.currentItem : this.initBook();
+    if (this.book.author.id) {
+      this.getSeries(this.book.author.id);
+    }
     this.form = this.initForm();
     this.getAuthors();
   }
@@ -40,8 +43,8 @@ export class BookAddComponent implements OnInit {
     return this.formBuilder.group({
       title: [this.book.title, Validators.required],
       description: [this.book.description, Validators.required],
-      author: [this.book.author.name, [Validators.required, this.validateAutocomplete]],
-      series: [this.book.series ? this.book.series.title : '', this.validateAutocomplete]
+      author: [this.book.author, [Validators.required, this.validateAutocomplete]],
+      series: [this.book.series, this.validateAutocomplete]
     });
   }
   validateAutocomplete(control: FormControl) {
@@ -83,10 +86,12 @@ export class BookAddComponent implements OnInit {
   seriesDisplayFn = (series?: Series): string | undefined => series ? series.title : undefined;
 
   addBook() {
+    const series_id = this.form.value['series'].id ? this.form.value['series'].id : undefined;
     const bookDTO: BookDTO = {
       title: this.form.value['title'],
       description: this.form.value['description'],
       author_id: this.form.value['author'].id,
+      series_id
     };
     this.bookService.post(bookDTO).subscribe(res => {
       this.dialogRef.close();
