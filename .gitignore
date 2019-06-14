@@ -175,3 +175,4 @@ venv.bak/
 /backend/src/main/main.db-shm
 /backend/src/main/test.db-shm
 backend/src/main/test.db
+.vscode/settings.json
