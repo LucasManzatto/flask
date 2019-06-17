@@ -1,6 +1,6 @@
-from backend.src.main.model.books import Book, BookSchema
+from main.model.books import Book, BookSchema
 
-from backend.src.test.resources.generics import GenericTests
+from test.resources.generics import GenericTests
 from faker import Faker
 from sqlalchemy.orm import joinedload
 

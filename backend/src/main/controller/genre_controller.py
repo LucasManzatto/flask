@@ -1,8 +1,8 @@
 from flask import request
 from flask_restplus import Resource
-from backend.src.main.service.genre_service import GenreService
+from main.service.genre_service import GenreService
 
-from backend.src.main.util.dto import GenreDTO, base_args
+from main.util.dto import GenreDTO, base_args
 from webargs import fields
 from webargs.flaskparser import use_args
 

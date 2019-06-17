@@ -1,8 +1,8 @@
-from backend.src.main.model.books import BookFactory
-from backend.src.main.model.series import SeriesFactory
+from main.model.books import BookFactory
+from main.model.series import SeriesFactory
 from marshmallow import Schema, fields, post_load
 import factory
-from backend.src.main import db
+from main import db
 
 author_series = db.Table('author_series', db.Model.metadata,
                          db.Column('author_id', db.Integer, db.ForeignKey('author.id')),

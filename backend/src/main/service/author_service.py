@@ -1,6 +1,6 @@
-from backend.src.main.model.author import Author, AuthorSchema
-from backend.src.main.model.series import Series
-from backend.src.main.service.base_service import BaseService
+from main.model.author import Author, AuthorSchema
+from main.model.series import Series
+from main.service.base_service import BaseService
 from marshmallow import INCLUDE
 
 

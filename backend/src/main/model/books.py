@@ -4,7 +4,7 @@ import factory
 from factory.fuzzy import FuzzyDate
 from marshmallow import post_load, Schema, fields
 
-from backend.src.main import db
+from main import db
 
 book_genres = db.Table('book_genres', db.Model.metadata,
                        db.Column('book_id', db.Integer, db.ForeignKey('book.id')),
@@ -56,14 +56,14 @@ class BookFactory(factory.alchemy.SQLAlchemyModelFactory):
     id = factory.Sequence(lambda n: n)
     title = factory.Sequence(lambda n: u'Book %d' % n)
     description = factory.Sequence(lambda n: u'Description %d' % n)
-    author = factory.SubFactory('backend.src.main.model.author.AuthorFactory')
+    author = factory.SubFactory('main.model.author.AuthorFactory')
     start_date = FuzzyDate(datetime.now(), datetime(2020, 1, 1))
     end_date = FuzzyDate(datetime(2020, 1, 2), datetime(2022, 1, 1))
 
 
 class BookWithSeriesFactory(BookFactory):
     title = factory.Sequence(lambda n: u'Book With Series %d' % n)
-    series = factory.SubFactory('backend.src.main.model.series.SeriesFactory')
+    series = factory.SubFactory('main.model.series.SeriesFactory')
 
 
 class BookSchema(Schema):

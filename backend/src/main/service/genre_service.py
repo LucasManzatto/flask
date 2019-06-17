@@ -1,6 +1,6 @@
-from backend.src.main.model.genre import GenreSchema, Genre
-from backend.src.main.model.books import Book
-from backend.src.main.service.base_service import BaseService
+from main.model.genre import GenreSchema, Genre
+from main.model.books import Book
+from main.service.base_service import BaseService
 
 
 class GenreService(BaseService):

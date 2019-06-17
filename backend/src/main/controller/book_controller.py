@@ -1,8 +1,8 @@
 from flask import request
 from flask_restplus import Resource
 
-from backend.src.main.service.book_service import BookService
-from backend.src.main.util.dto import BookDTO, base_args
+from main.service.book_service import BookService
+from main.util.dto import BookDTO, base_args
 from webargs import fields
 from webargs.flaskparser import use_args
 

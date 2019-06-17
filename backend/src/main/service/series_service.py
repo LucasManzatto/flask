@@ -1,5 +1,5 @@
-from backend.src.main.model.series import Series, SeriesSchema
-from backend.src.main.model.books import Book
+from main.model.series import Series, SeriesSchema
+from main.model.books import Book
 from main.service.base_service import BaseService
 
 

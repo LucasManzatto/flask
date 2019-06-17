@@ -1,7 +1,7 @@
 import factory
 from marshmallow import post_load, Schema, fields
 
-from backend.src.main import db
+from main import db
 
 
 class Series(db.Model):

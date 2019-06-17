@@ -1,4 +1,4 @@
-from backend.src.main.util.utils import success, created, conflict, not_found, bad_request
+from main.util.utils import success, created, conflict, not_found, bad_request
 from sqlalchemy.orm import joinedload
 
 

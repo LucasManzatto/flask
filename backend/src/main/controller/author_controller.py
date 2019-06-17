@@ -1,8 +1,8 @@
 from flask import request
 from flask_restplus import Resource
 
-from backend.src.main.service.author_service import AuthorService
-from backend.src.main.util.dto import AuthorDTO, base_args
+from main.service.author_service import AuthorService
+from main.util.dto import AuthorDTO, base_args
 from webargs import fields
 from webargs.flaskparser import use_args
 

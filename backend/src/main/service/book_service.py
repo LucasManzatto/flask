@@ -1,8 +1,8 @@
-from backend.src.main.model.author import Author
-from backend.src.main.model.books import Book, BookSchema
-from backend.src.main.model.genre import Genre
-from backend.src.main.service.base_service import BaseService
-from backend.src.main.model.series import Series
+from main.model.author import Author
+from main.model.books import Book, BookSchema
+from main.model.genre import Genre
+from main.service.base_service import BaseService
+from main.model.series import Series
 
 
 class BookService(BaseService):

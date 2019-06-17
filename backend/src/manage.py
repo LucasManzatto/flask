@@ -1,10 +1,10 @@
 import os
 import unittest
 
+from blueprints import blueprint
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
-from backend.src import blueprint
-from backend.src.main import create_app, db
+from main import db, create_app
 
 app = create_app(os.getenv('BOILERPLATE_ENV') or 'dev')
 # app = create_app('test')
@@ -17,7 +17,7 @@ manager.add_command('db', MigrateCommand)
 
 @manager.command
 def run():
-    app.run(host='0.0.0.0', port=80)
+    app.run(host='0.0.0.0', port=3000)
 
 
 @manager.command

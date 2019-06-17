@@ -1,7 +1,7 @@
 from flask_restplus import fields
 from webargs import fields as webargs_fields
 
-from backend.src.main import api
+from main import api
 
 base_args = {
     "page": webargs_fields.Str(missing=0),
@@ -53,7 +53,7 @@ class AuthorDTO:
 
 
 class BookDTO:
-    api = api.namespace('books', description='Operations related to books')
+    api = api.namespace('books', description='Operations related to books.')
 
     base = api.model('Book_Base', {
         'title': fields.String(required=True, description='The title of the book.'),

@@ -1,8 +1,8 @@
 from flask import request
 from flask_restplus import Resource
 
-from backend.src.main.service.series_service import SeriesService
-from backend.src.main.util.dto import SeriesDTO, base_args
+from main.service.series_service import SeriesService
+from main.util.dto import SeriesDTO, base_args
 from webargs import fields
 from webargs.flaskparser import use_args
 

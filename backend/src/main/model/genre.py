@@ -1,8 +1,8 @@
-from backend.src.main.model.books import BookFactory
+from main.model.books import BookFactory
 import factory
 from marshmallow import Schema, fields, post_load
 
-from backend.src.main import db
+from main import db
 
 
 class Genre(db.Model):

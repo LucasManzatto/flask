@@ -1,11 +1,11 @@
 import pytest
-from backend.src.main import create_app, db
-from backend.src.main.model.series import SeriesFactory
-from backend.src.main.model.author import Author, AuthorFactory
+from main import create_app, db
+from main.model.series import SeriesFactory
+from main.model.author import Author, AuthorFactory
 
-from backend.src import blueprint
-from backend.src.main.model.books import Book, BookFactory, BookWithSeriesFactory
-from backend.src.main.model.genre import Genre, GenreFactory
+from main.model.books import Book, BookFactory, BookWithSeriesFactory
+from main.model.genre import Genre, GenreFactory
+from manage import blueprint
 
 
 @pytest.fixture(scope='session')

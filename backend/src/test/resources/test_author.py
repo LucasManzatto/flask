@@ -1,6 +1,6 @@
-from backend.src.main.model.author import Author, AuthorSchema, author_series
-from backend.src.test.resources.generics import GenericTests
-from backend.src.main.model.books import Book
+from main.model.author import Author, AuthorSchema, author_series
+from test.resources.generics import GenericTests
+from main.model.books import Book
 from faker import Faker
 from sqlalchemy import and_
 

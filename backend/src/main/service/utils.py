@@ -1,4 +1,4 @@
-from backend.src.main import db
+from main import db
 from sqlalchemy import or_, and_
 import re
 

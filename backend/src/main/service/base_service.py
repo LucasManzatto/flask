@@ -1,6 +1,6 @@
-from backend.src.main import db
-from backend.src.main.service import utils
-from backend.src.main.util.utils import response_success, response_conflict, response_created, response_bad_request
+from main import db
+from main.service import utils
+from main.util.utils import response_success, response_conflict, response_created, response_bad_request
 from marshmallow import ValidationError
 from sqlalchemy.orm import joinedload
 

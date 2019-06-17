@@ -1,7 +1,6 @@
-from backend.src.test.resources.generics import GenericTests
+from test.resources.generics import GenericTests
+from main.model.genre import Genre, GenreSchema
 from faker import Faker
-from backend.src.main.model.genre import Genre, GenreSchema
-from sqlalchemy.orm import joinedload
 
 endpoint = 'genres'
 model = Genre
