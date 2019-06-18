@@ -20,7 +20,7 @@ dto = AuthorDTO
 
 @api.route('/')
 @api.doc(
-    responses={200: 'OK', 201: 'Created', 400: 'Invalid_ Argument', 404: 'Author not found.', 500: 'Mapping Key Error'})
+    responses={200: 'OK', 201: 'Created.', 400: 'Invalid_ Argument', 404: 'Author not found.', 500: 'Mapping Key Error'})
 class AuthorCollection(Resource):
     @api.marshal_list_with(dto.query, code=201)
     @use_args(list_all_args)
