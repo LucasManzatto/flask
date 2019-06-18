@@ -44,5 +44,5 @@ class SeriesSchema(Schema):
     title = fields.String(required=True)
 
     @post_load
-    def make_series(self, data):
+    def make_series(self, data, **kwargs):
         return Series(**data)

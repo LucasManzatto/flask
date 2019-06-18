@@ -76,5 +76,5 @@ class BookSchema(Schema):
     end_date = fields.Date(allow_none=True)
 
     @post_load
-    def make_book(self, data):
+    def make_book(self, data, **kwargs):
         return Book(**data)

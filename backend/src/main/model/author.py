@@ -61,5 +61,5 @@ class AuthorSchema(Schema):
     name = fields.String(required=True)
 
     @post_load
-    def make_author(self, data):
+    def make_author(self, data, **kwargs):
         return Author(**data)

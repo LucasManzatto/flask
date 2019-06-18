@@ -47,5 +47,5 @@ class GenreSchema(Schema):
     name = fields.String(required=True)
 
     @post_load
-    def make_genre(self, data):
+    def make_genre(self, data, **kwargs):
         return Genre(**data)
