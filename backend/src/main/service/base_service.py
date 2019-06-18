@@ -29,17 +29,17 @@ class BaseService:
         :param update: Boolean value to tell if it's a create or update
         :return: Success if created or updated, bad request if JSON is wrong, or conflict if object already exists
         """
+        fk_objects = self.get_fk(data, self.fks)
         try:
             new_item = self.schema.load(data)
         except ValidationError as err:
             return response_bad_request(err.messages)
-        fk_objects = self.get_fk(data, self.fks)
 
         item = self.model.query.filter(self.filter_by == data[self.filter_by_key]).first()
         if item:
             return response_conflict(f'{self.model_name} already exists. Please choose another value.')
         else:
-            return self.update_item(data, fk_objects) if update else self.create(new_item, fk_objects)
+            return self.update_item(data) if update else self.create(new_item, fk_objects)
 
     def get_fk(self, data, fks):
         """
@@ -94,9 +94,7 @@ class BaseService:
                 if len(fk['value']) == 1:
                     setattr(data, fk['key'], fk['value'][0])
 
-    def update_item(self, data, fk_objects):
-        item = self.model.query.get(data['id'])
-        self.set_fks_to_object(data, fk_objects)
+    def update_item(self, data):
         self.model.query.filter_by(id=data['id']).update(data)
         db.session.commit()
         return response_success(f'{self.model_name} successfully updated.')

@@ -69,7 +69,7 @@ class BookWithSeriesFactory(BookFactory):
 class BookSchema(Schema):
     id = fields.Integer(allow_none=True)
     title = fields.String(required=True)
-    author_id = fields.Number(required=True)
+    author_id = fields.Number(allow_none=True)
     description = fields.String(allow_none=True)
     series_id = fields.Number(allow_none=True)
     start_date = fields.Date(allow_none=True)
